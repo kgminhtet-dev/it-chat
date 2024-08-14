@@ -16,7 +16,7 @@ import { NotificationRepoService } from './Notification/notification-repo.servic
       port: 5432,
       username: 'postgres',
       password: '12345678',
-      database: 'chat',
+      database: 'itchat',
       entities: [Account, Chat, Message, Notification],
       synchronize: true,
     }),
@@ -37,5 +37,4 @@ import { NotificationRepoService } from './Notification/notification-repo.servic
     NotificationRepoService,
   ],
 })
-export class RepositoryModule {
-}
+export class RepositoryModule {}

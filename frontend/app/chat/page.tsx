@@ -10,7 +10,7 @@ export default function Chat() {
   const { isConnected } = useWebsocket(token);
   if (!isConnected) {
     return (
-      <main className={'w-screen h-screen flex justify-center items-center'}>
+      <main className={'w-full h-full flex justify-center items-center'}>
         <Skeleton />
       </main>
     );

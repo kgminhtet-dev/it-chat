@@ -18,14 +18,14 @@ export class ChatRepoService {
     });
   }
 
-  async findIdsByUsername(username: string) {
+  async findIdsByAccountId(accountId: string) {
     const chats = await this.chatRepository.find({
       select: {
         id: true,
       },
       where: {
         accounts: {
-          username: username,
+          id: accountId,
         },
       },
     });
@@ -33,6 +33,7 @@ export class ChatRepoService {
   }
 
   async create(id: string, members: string[], name = '') {
+    members = members.map((member) => member.slice(1));
     const accounts = await this.accountRepoService.findAll(members);
     const newChat = this.chatRepository.create({
       id,

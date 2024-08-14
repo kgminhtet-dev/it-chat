@@ -29,17 +29,17 @@ export class ChatWsGateway {
 
   async handleConnection(client: Socket) {
     const payload = await this.authWsGuard.validateToken(client);
-    const username = payload.username;
-    if (!username) {
+    const accountId = payload.sub;
+    if (!accountId) {
       this.server.emit('error', 'Invalid token.');
       return client.disconnect();
     }
 
-    this.connList.set(username, client);
+    this.connList.set(accountId, client);
     console.info(`Client connected: ${client.id}`);
 
     this.gatewayService
-      .getChatIds(username)
+      .getChatIds(accountId)
       .then((chatIds: string[]) =>
         chatIds.forEach((room) => {
           client.join(room);
@@ -49,12 +49,12 @@ export class ChatWsGateway {
   }
 
   handleDisconnect(client: Socket) {
-    const username = client.handshake.query.username as string;
-    this.connList.delete(username);
-    console.info(`Client disconnected: ${client.id} and ${username}`);
+    const accountId = client.handshake.query.id as string;
+    this.connList.delete(accountId);
+    console.info(`Client disconnected: ${client.id} and ${accountId}`);
 
     this.gatewayService
-      .getChatIds(username)
+      .getChatIds(accountId)
       .then((chatIds: string[]) =>
         chatIds.forEach((room) => {
           client.leave(room);
@@ -68,13 +68,14 @@ export class ChatWsGateway {
     @MessageBody() { sender, participants }: ChatIdEventDto,
     @ConnectedSocket() client: Socket,
   ) {
+    const accountId = client.handshake.query.id as string;
     const chatId = this.gatewayService.getUUID4();
-    const socket = this.connList.get(sender);
     const accounts = await this.gatewayService.getAccounts(participants);
+    const socket = this.connList.get(accountId);
     const respAccounts = accounts.map((account) => ({
       id: account.id,
       fullname: account.fullname,
-      username: account.username,
+      username: '@' + account.username,
     }));
 
     socket.join(chatId);
@@ -90,17 +91,27 @@ export class ChatWsGateway {
   async handleNewChat(
     @MessageBody()
     { sender, participants, chatId, content }: NewChatEventDto,
-    @ConnectedSocket() client: Socket,
   ) {
-    const chat = await this.gatewayService.creatChat(chatId, participants);
-    participants.forEach((p) => {
-      const socket = this.connList.get(p);
+    const chat = await this.gatewayService.createChat(chatId, participants);
+    chat.accounts.forEach((account) => {
+      const socket = this.connList.get(account.id);
       if (socket) socket.join(chatId);
     });
     const message = this.gatewayService.createMessage(sender, chatId, content);
+
     this.server.to(chatId).emit('new chat', {
       message,
-      chat,
+      chat: {
+        id: chat.id,
+        lastMessage: message.content,
+        lastChatTime: message.createdAt,
+        name: chat.name,
+        participants: chat.accounts.map((account) => ({
+          id: account.id,
+          fullname: account.fullname,
+          username: '@' + account.username,
+        })),
+      },
     });
     await this.gatewayService.saveMessage(message);
   }
@@ -109,7 +120,6 @@ export class ChatWsGateway {
   async handleMessage(
     @MessageBody()
     { sender, chatId, content }: MessageEventDto,
-    @ConnectedSocket() client: Socket,
   ) {
     const message = this.gatewayService.createMessage(sender, chatId, content);
     this.server.to(chatId).emit('message', message);

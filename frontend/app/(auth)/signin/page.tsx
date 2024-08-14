@@ -97,13 +97,6 @@ export default function Signin() {
               Sign in
             </Button>
             <div className={'w-full flex justify-between'}>
-              <Link
-                href="#"
-                className="text-sm font-medium underline underline-offset-4 hover:text-primary"
-                prefetch={false}
-              >
-                Forgot password?
-              </Link>
               <div className="text-sm text-muted-foreground">
                 Don&apos;t have an account?{' '}
                 <Link

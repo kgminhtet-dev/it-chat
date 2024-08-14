@@ -15,7 +15,7 @@ export class AccountRepoService {
   findAll(usernames?: string[]): Promise<Account[]> {
     if (!usernames) return this.accountRepository.find();
     return this.accountRepository.find({
-      where: usernames.map((username) => ({ username })),
+      where: usernames.map((username) => ({ username: username })),
     });
   }
 
@@ -67,24 +67,51 @@ export class AccountRepoService {
     });
   }
 
+  findById(id: string, chats = false) {
+    if (chats) {
+      return this.accountRepository.findOne({
+        where: {
+          id,
+        },
+        relations: {
+          chats: {
+            accounts: true,
+          },
+        },
+        order: {
+          chats: {
+            lastChatTime: 'desc',
+          },
+        },
+      });
+    }
+    return this.accountRepository.findOne({ where: { id } });
+  }
+
   create(createAccountDto: CreateAccountDto) {
     const newUser = this.accountRepository.create(createAccountDto);
     return this.accountRepository.save(newUser);
   }
 
-  update(username: string, updateAccountDto: UpdateAccountDto) {
-    return this.accountRepository.update({ username }, updateAccountDto);
+  update(id: string, updateAccountDto: UpdateAccountDto) {
+    return this.accountRepository.update({ id }, updateAccountDto);
   }
 
-  deactivateAccount(username: string) {
-    return this.accountRepository.update(username, {
-      isDeactivated: true,
-    });
+  deactivate(id: string) {
+    return this.accountRepository.update(
+      { id },
+      {
+        isDeactivated: true,
+      },
+    );
   }
 
-  activateAccount(username: string) {
-    return this.accountRepository.update(username, {
-      isDeactivated: false,
-    });
+  activate(id: string) {
+    return this.accountRepository.update(
+      { id },
+      {
+        isDeactivated: false,
+      },
+    );
   }
 }

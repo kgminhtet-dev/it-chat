@@ -39,7 +39,7 @@ export class AuthService {
       profile: {
         id: account.id,
         fullname: account.fullname,
-        username: account.username,
+        username: '@' + account.username,
         email: account.email,
       },
       chats: [],
@@ -58,12 +58,14 @@ export class AuthService {
       throw new UnauthorizedException(`Incorrect password.`);
     }
 
+    if (account.isDeactivated) this.accountRepoService.activate(account.id);
+
     const payload = { sub: account.id, username: account.username };
     return {
       profile: {
         id: account.id,
         fullname: account.fullname,
-        username: account.username,
+        username: '@' + account.username,
         email: account.email,
       },
       chats: this.toRespChats(account, account.chats),
@@ -90,8 +92,9 @@ export class AuthService {
         lastChatTime: chat.lastChatTime,
         contact: {
           id: contact.id,
-          username: contact.username,
+          username: '@' + contact.username,
           fullname: contact.fullname,
+          isDeactivated: contact.isDeactivated,
         },
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,

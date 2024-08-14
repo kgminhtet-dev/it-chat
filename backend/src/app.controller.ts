@@ -1,10 +1,12 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -21,6 +23,8 @@ import { AuthGuard } from './services/auth/auth.guard';
 import { AuthService } from './services/auth/auth.service';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { ActionDto } from './dto/action.dto';
 
 @Controller('api')
 export class AppController {
@@ -57,12 +61,6 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('accounts/:accountId')
-  async getAccount(@Req() request: Request & { payload: IPayload }) {
-    return this.userService.getAccount(request.payload.username);
-  }
-
-  @UseGuards(AuthGuard)
   @Get('accounts/:accountId/chats/:chatId/messages')
   async getMessages(
     @Req() request: Request & { payload: IPayload },
@@ -73,21 +71,41 @@ export class AppController {
 
   @UseGuards(AuthGuard)
   @Get('accounts')
-  async searchAccount(
+  async getAccount(
     @Req() request: Request & { payload: IPayload },
     @Query('kind') kind: string,
+    @Query('username') username: string,
   ) {
     if (kind === 'profile')
-      return this.userService.getProfile(request.payload.username);
-    return this.userService.getAccount(request.payload.username);
+      return this.userService.getAccountById(request.payload.sub);
+    if (username) return this.userService.getProfile(username);
   }
 
   @UseGuards(AuthGuard)
-  @Post('accounts/:accountId')
+  @HttpCode(HttpStatus.OK)
+  @Patch('accounts/:accountId')
   async updateAccount(
+    @Body() data: UpdateUserDto,
     @Req() request: Request & { payload: IPayload },
-    @Body() data: unknown,
   ) {
     return this.userService.update(request.payload.username, data);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('accounts/:accountId/actions')
+  async handleActions(
+    @Body() actionDto: ActionDto,
+    @Req() request: Request & { payload: IPayload },
+  ) {
+    switch (actionDto.action) {
+      case 'deactivate':
+        console.info('deactivating...');
+        return this.userService.deactivate(request.payload.sub);
+      default:
+        throw new BadRequestException(
+          `${actionDto.action} is invalid method name.`,
+        );
+    }
   }
 }

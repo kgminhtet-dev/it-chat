@@ -11,7 +11,7 @@ export default function useWebsocket(token: string) {
   const addMessage = useAppStore((state) => state.addMessage);
   const setMessages = useAppStore((state) => state.setMessages);
   const addChat = useAppStore((state) => state.addChat);
-  const url = `ws://localhost:8080`;
+  const url = `ws://localhost:8080?id=${profile.id}`;
 
   useEffect(() => {
     const socket = io(url, {
@@ -39,7 +39,6 @@ export default function useWebsocket(token: string) {
     });
 
     socket.on('chat id', (chat) => {
-      console.log('chat in websocke in chat id', chat);
       addChat(chat);
       setMessages([], chat);
     });
@@ -64,7 +63,7 @@ export default function useWebsocket(token: string) {
       setSocket(null);
       socket.disconnect();
     };
-  }, [url, profile.username, setSocket, addMessage, addChat, setMessages]);
+  }, [token, url, profile.username, setSocket, addMessage, addChat, setMessages]);
 
   return { isConnected };
 }

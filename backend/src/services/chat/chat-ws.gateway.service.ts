@@ -18,6 +18,7 @@ export class ChatWsGatewayService {
   }
 
   getAccounts(usernames: string[]) {
+    usernames = usernames.map((username) => username.slice(1));
     return this.accountRepoService.findAll(usernames);
   }
 
@@ -36,11 +37,11 @@ export class ChatWsGatewayService {
     return this.messageRepoService.save(message);
   }
 
-  async getChatIds(username: string) {
-    return this.chatRepoSerivce.findIdsByUsername(username);
+  async getChatIds(accountId: string) {
+    return this.chatRepoSerivce.findIdsByAccountId(accountId);
   }
 
-  async creatChat(chatId: string, participants: string[]) {
+  async createChat(chatId: string, participants: string[]) {
     return this.chatRepoSerivce.create(chatId, participants);
   }
 }

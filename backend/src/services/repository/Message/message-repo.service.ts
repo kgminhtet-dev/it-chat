@@ -43,7 +43,7 @@ export class MessageRepoService {
     chat.lastMessage = message.content;
     chat.lastChatTime = message.createdAt;
     const account = await this.accountRepoService.findByUsername(
-      message.sender,
+      message.sender.slice(1),
     );
     await this.chatRepoService.update(chat.id, chat);
     return this.messageRepository.save({
@@ -65,9 +65,6 @@ export class MessageRepoService {
       },
       relations: {
         sender: true,
-      },
-      order: {
-        createdAt: 'ASC',
       },
     });
   }

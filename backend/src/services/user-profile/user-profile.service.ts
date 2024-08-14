@@ -5,22 +5,43 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserProfileService {
   constructor(private accountRepoService: AccountRepoService) {}
 
-  async update(username: string, params: any) {
+  async update(username: string, params: UpdateUserDto) {
     if (params.fullname) return this.changeName(username, params.fullname);
     if (params.email) return this.changeEmail(username, params.email);
     if (params.username) return this.changeUsername(username, params.username);
+    throw new BadRequestException('Invalid data.');
   }
 
   async getProfile(username: string) {
+    if (username[0] !== '@') {
+      throw new BadRequestException('Username must start with "@"');
+    }
     const account = await this.accountRepoService.findByUsername(
-      username,
-      true,
+      username.slice(1),
     );
+    if (!account || account.isDeactivated) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    return {
+      id: account.id,
+      fullname: account.fullname,
+      username: '@' + account.username,
+    };
+  }
+
+  async getAccountById(id: string) {
+    const account = await this.accountRepoService.findById(id, true);
+    if (!account) {
+      throw new NotFoundException(`User not found.`);
+    }
+
     const chats = account.chats.map((chat) => {
       const contact = chat.accounts.filter(
         (member) => account.username != member.username,
@@ -32,8 +53,9 @@ export class UserProfileService {
         lastChatTime: chat.lastChatTime,
         contact: {
           id: contact.id,
-          username: contact.username,
+          username: '@' + contact.username,
           fullname: contact.fullname,
+          isDeactivated: contact.isDeactivated,
         },
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,
@@ -44,7 +66,7 @@ export class UserProfileService {
       profile: {
         id: account.id,
         fullname: account.fullname,
-        username: account.username,
+        username: '@' + account.username,
         email: account.email,
       },
       chats,
@@ -53,34 +75,21 @@ export class UserProfileService {
     };
   }
 
-  async getAccount(username: string) {
-    const account = await this.accountRepoService.findByUsername(username);
-    if (account)
-      return {
-        id: account.id,
-        fullname: account.fullname,
-        username: account.username,
-      };
-    throw new NotFoundException(`User not found.`);
-  }
-
-  async changeName(username: string, fullname: string) {
-    const updateAccount = await this.accountRepoService.update(username, {
+  async changeName(id: string, fullname: string) {
+    const updateAccount = await this.accountRepoService.update(id, {
       fullname,
     });
 
     if (updateAccount.affected === 0)
-      throw new InternalServerErrorException(
-        '[change name] something went wrong.',
-      );
+      throw new InternalServerErrorException('Something went wrong.');
 
     return {
-      message: 'Name is changed successfully.',
+      message: 'Name is successfully changed.',
     };
   }
 
-  async changeEmail(username: string, email: string) {
-    const updateAccount = await this.accountRepoService.update(username, {
+  async changeEmail(id: string, email: string) {
+    const updateAccount = await this.accountRepoService.update(id, {
       email,
     });
 
@@ -90,12 +99,12 @@ export class UserProfileService {
       );
 
     return {
-      message: 'Email is changed successfully.',
+      message: 'Email is successfully changed.',
     };
   }
 
-  async changeUsername(username: string, newUsername: string) {
-    const updatedResult = await this.accountRepoService.update(username, {
+  async changeUsername(id: string, newUsername: string) {
+    const updatedResult = await this.accountRepoService.update(id, {
       username: newUsername,
     });
 
@@ -105,70 +114,65 @@ export class UserProfileService {
       );
 
     return {
-      message: 'Username is changed successfully.',
+      message: 'Username is successfully changed.',
     };
   }
 
-  async changePassword(username: string, params: any) {
-    if (params.oldPassword || params.newPassword)
+  async changePassword(id: string, params: any) {
+    if (params.currentPassword || params.newPassword)
       throw new BadRequestException('Password is required to change.');
 
-    const { oldPassword, newPassword } = params;
+    const { currentPassword, newPassword } = params;
 
-    const account = await this.accountRepoService.findByUsername(username);
-
-    if (account.password === oldPassword)
+    if (currentPassword === newPassword)
       throw new BadRequestException(
-        'Old password and new password do not match.',
+        'Current password and new password are same.',
       );
 
-    const updatedAccount = await this.accountRepoService.update(username, {
+    const account = await this.accountRepoService.findById(id);
+
+    if (account.password === currentPassword)
+      throw new BadRequestException('Current password is not correct.');
+
+    const updatedAccount = await this.accountRepoService.update(id, {
       password: newPassword,
     });
 
     if (updatedAccount.affected === 0)
-      throw new InternalServerErrorException(
-        '[change password] something went wrong.',
-      );
+      throw new InternalServerErrorException('Something went wrong.');
 
     return {
-      message: 'Password is changed successfully.',
+      message: 'Password is successfully changed.',
     };
   }
 
-  async deactivate(username: string) {
-    const account = await this.accountRepoService.findByUsername(username);
+  async deactivate(id: string) {
+    const account = await this.accountRepoService.findById(id);
     if (account.isDeactivated)
       throw new BadRequestException('Account is already deactivated.');
 
-    const deactivateResult =
-      await this.accountRepoService.deactivateAccount(username);
+    const deactivateResult = await this.accountRepoService.deactivate(id);
 
     if (deactivateResult.affected === 0)
-      throw new InternalServerErrorException(
-        '[deactivate] something went wrong.',
-      );
+      throw new InternalServerErrorException('Something went wrong.');
 
     return {
-      message: `${username} is deactivated successfully.`,
+      message: `${account.fullname} is deactivated successfully.`,
     };
   }
 
-  async activate(username: string) {
-    const account = await this.accountRepoService.findByUsername(username);
+  async activate(id: string) {
+    const account = await this.accountRepoService.findById(id);
     if (!account.isDeactivated)
       throw new BadRequestException('Account is already activated.');
 
-    const updatedResult =
-      await this.accountRepoService.activateAccount(username);
+    const updatedResult = await this.accountRepoService.activate(id);
 
     if (updatedResult.affected === 0)
-      throw new InternalServerErrorException(
-        '[activate] something went wrong.',
-      );
+      throw new InternalServerErrorException('Something went wrong.');
 
     return {
-      message: `${username} is activated successfully.`,
+      message: `${account.fullname} is activated successfully.`,
     };
   }
 }

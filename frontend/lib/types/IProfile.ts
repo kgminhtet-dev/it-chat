@@ -3,4 +3,5 @@ export interface IProfile {
   fullname: string;
   username: string;
   email: string;
+  isDeactivated: boolean;
 }

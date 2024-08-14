@@ -71,32 +71,6 @@ export async function signup(formdata: any) {
   return { error: data.message };
 }
 
-export async function getAccount() {
-  const response = await fetch('http://localhost:8080/accounts/accountId');
-  const data = await response.json();
-  if (response.status === StatusCodes.OK) {
-    return data;
-  }
-  return { error: data.message };
-}
-
-export async function getChats() {
-  const token = await getCookie('access_token');
-  const response = await fetch(
-    'http://localhost:8080/accounts/accountId/chats',
-    {
-      headers: {
-        Authorization: `Bearer ${token?.value}`,
-      },
-    },
-  );
-  const data = await response.json();
-  if (response.status === StatusCodes.OK) {
-    return data;
-  }
-  return { error: data.message };
-}
-
 export async function getMessages(accountId: string, chatId: string) {
   const token = await getCookie('access_token');
   const response = await fetch(
@@ -108,10 +82,15 @@ export async function getMessages(accountId: string, chatId: string) {
     },
   );
   const data = await response.json();
+  console.log('messages ', data);
   if (response.status === StatusCodes.OK) {
     return data;
   }
   return { error: data.message };
+}
+
+export async function searchChatByName(chats: IChat[], fullname: string) {
+  return chats.filter(chat => chat.contact.fullname.toLowerCase().includes(fullname));
 }
 
 export async function searchUsername(username: string) {
@@ -131,9 +110,63 @@ export async function searchUsername(username: string) {
   return { error: data.message };
 }
 
-export async function searchChatFormHistory(chats: IChat[], username: string) {
+export async function searchChatFormHistory(chats: IChat[], chatId: string) {
   if (chats.length > 0) {
-    return chats.filter((chat) => chat.contact.username === username)[0];
+    return chats.filter((chat) => chat.id === chatId)[0];
   }
   return null;
+}
+
+export async function updateAccount(type: string, accountId: string, accountInfo: string) {
+  let requestData;
+
+  switch (type) {
+    case 'Fullname':
+      requestData = JSON.stringify({ fullname: accountInfo });
+      break;
+    case 'Email':
+      requestData = JSON.stringify({ email: accountInfo });
+      break;
+    case 'Username':
+      requestData = JSON.stringify({ username: accountInfo });
+      break;
+  }
+  const token = await getCookie('access_token');
+  const response = await fetch(`http://localhost:8080/api/accounts/${accountId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token?.value}`,
+    },
+    body: requestData,
+  });
+
+  const data = await response.json();
+  if (response.status === StatusCodes.OK) {
+    return { message: data.message };
+  }
+  return { error: data.message };
+}
+
+export async function deactivateAccount(accountId: string) {
+  const token = await getCookie('access_token');
+  const response = await fetch(`http://localhost:8080/api/accounts/${accountId}/actions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token?.value}`,
+    },
+    body: JSON.stringify({
+      action: 'deactivate',
+    }),
+  });
+  const data = await response.json();
+  if (response.status === StatusCodes.OK) {
+    return { message: data.message };
+  }
+  return { error: data.message };
+}
+
+export async function signout() {
+  return cookies().delete('access_token');
 }

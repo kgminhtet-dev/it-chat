@@ -4,16 +4,12 @@ import NotProfile from '@/components/app-ui/not-profile';
 import { Toaster } from '@/components/ui/toaster';
 import { IProfile } from '@/lib/types/IProfile';
 import useAppStore from '@/components/hooks/use-app-store';
+import NotToken from '@/components/app-ui/not-token';
 import SearchBar from '@/components/app-ui/search-bar';
 import ChatList from '@/components/app-ui/chat-list';
 import ProfileBar from '@/components/app-ui/profile-bar';
-import NotToken from '@/components/app-ui/not-token';
 
-export default function ChatLayout({
-                                     children,
-                                   }: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function ChatLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const profile = useAppStore((state) => state.profile) as IProfile;
   const chats = useAppStore((state) => state.chats);
   const token = useAppStore((state) => state.token);

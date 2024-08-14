@@ -16,13 +16,12 @@ export class ChatService {
 
   async getMessages(chatId: string) {
     const messages = await this.messageRepoService.findByChatId(chatId);
-    return messages.map((message) => ({
-      ...message,
-      sender: message.sender.username,
-    }));
-  }
-
-  async getChatIds(username: string) {
-    return this.chatRepoService.findIdsByUsername(username);
+    return messages.map(
+      (message) =>
+        message.sender && {
+          ...message,
+          sender: '@' + message.sender.username,
+        },
+    );
   }
 }

@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDateToTimeString, shortName } from "@/lib/utils";
-import { IAccount } from "@/lib/types/IAccount";
-import { IMessage } from "@/lib/types/IMessage";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { formatDateToTimeString, shortName } from '@/lib/utils';
+import { IAccount } from '@/lib/types/IAccount';
+import { IMessage } from '@/lib/types/IMessage';
 
 interface Props {
   sender: IAccount;
@@ -12,7 +12,8 @@ export default function SendMessage({ sender, message }: Props) {
   return (
     <div className="flex items-start gap-1 justify-end">
       <div className="relative grid gap-1">
-        <div className="flex gap-1 bg-primary text-primary-foreground px-4 py-2 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl text-sm max-w-screen-sm whitespace-pre-wrap">
+        <div
+          className="flex gap-1 bg-primary text-primary-foreground px-4 py-2 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl text-sm max-w-screen-sm whitespace-pre-wrap">
           {message.content}
           <div className="w-12" />
         </div>
