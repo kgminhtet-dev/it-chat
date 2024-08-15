@@ -7,18 +7,20 @@ import { AccountRepoService } from './Account/account-repo.service';
 import { MessageRepoService } from './Message/message-repo.service';
 import { ChatRepoService } from './Chat/chat-repo.service';
 import { NotificationRepoService } from './Notification/notification-repo.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: process.env.POSTGRES_HOST,
       port: 5432,
-      username: 'postgres',
-      password: '12345678',
-      database: 'itchat',
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
       entities: [Account, Chat, Message, Notification],
-      synchronize: true,
+      ssl: true,
     }),
     TypeOrmModule.forFeature([Account, Chat, Message, Notification]),
   ],
