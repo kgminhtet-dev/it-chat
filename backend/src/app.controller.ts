@@ -88,7 +88,7 @@ export class AppController {
     @Body() data: UpdateUserDto,
     @Req() request: Request & { payload: IPayload },
   ) {
-    return this.userService.update(request.payload.username, data);
+    return this.userService.update(request.payload.sub, data);
   }
 
   @UseGuards(AuthGuard)
@@ -100,7 +100,6 @@ export class AppController {
   ) {
     switch (actionDto.action) {
       case 'deactivate':
-        console.info('deactivating...');
         return this.userService.deactivate(request.payload.sub);
       default:
         throw new BadRequestException(

@@ -3,12 +3,12 @@ import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 export class SignupDto {
   @IsNotEmpty()
   @IsString()
-  @Length(4, 60)
+  @Length(5, 64)
   readonly fullname: string;
 
   @IsNotEmpty()
   @IsString()
-  @Length(4, 20)
+  @Length(5, 20)
   readonly username: string;
 
   @IsNotEmpty()

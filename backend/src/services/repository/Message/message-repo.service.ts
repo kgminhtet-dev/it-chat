@@ -39,7 +39,7 @@ export class MessageRepoService {
   }
 
   async save(message: IMessage) {
-    const chat = await this.chatRepoService.findById(message.chat);
+    const chat = await this.chatRepoService.findById(message.chatId);
     chat.lastMessage = message.content;
     chat.lastChatTime = message.createdAt;
     const account = await this.accountRepoService.findByUsername(
@@ -65,6 +65,9 @@ export class MessageRepoService {
       },
       relations: {
         sender: true,
+      },
+      order: {
+        createdAt: 'ASC',
       },
     });
   }

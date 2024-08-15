@@ -11,10 +11,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserProfileService {
   constructor(private accountRepoService: AccountRepoService) {}
 
-  async update(username: string, params: UpdateUserDto) {
-    if (params.fullname) return this.changeName(username, params.fullname);
-    if (params.email) return this.changeEmail(username, params.email);
-    if (params.username) return this.changeUsername(username, params.username);
+  async update(id: string, params: UpdateUserDto) {
+    if (params.fullname) return this.changeName(id, params.fullname);
+    if (params.email) return this.changeEmail(id, params.email);
+    if (params.username) return this.changeUsername(id, params.username);
+    if (params.currentPassword && params.newPassword)
+      return this.changePassword(id, params);
     throw new BadRequestException('Invalid data.');
   }
 
@@ -104,8 +106,16 @@ export class UserProfileService {
   }
 
   async changeUsername(id: string, newUsername: string) {
+    if (newUsername[0] !== '@')
+      throw new BadRequestException('Username must start with "@".');
+
+    const account = await this.accountRepoService.findByUsername(newUsername);
+    if (account) {
+      throw new BadRequestException('Username is already taken.');
+    }
+
     const updatedResult = await this.accountRepoService.update(id, {
-      username: newUsername,
+      username: newUsername.slice(1),
     });
 
     if (updatedResult.affected === 0)
@@ -119,9 +129,6 @@ export class UserProfileService {
   }
 
   async changePassword(id: string, params: any) {
-    if (params.currentPassword || params.newPassword)
-      throw new BadRequestException('Password is required to change.');
-
     const { currentPassword, newPassword } = params;
 
     if (currentPassword === newPassword)
@@ -130,8 +137,7 @@ export class UserProfileService {
       );
 
     const account = await this.accountRepoService.findById(id);
-
-    if (account.password === currentPassword)
+    if (account.password !== currentPassword)
       throw new BadRequestException('Current password is not correct.');
 
     const updatedAccount = await this.accountRepoService.update(id, {

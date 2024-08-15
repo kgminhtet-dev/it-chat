@@ -170,3 +170,22 @@ export async function deactivateAccount(accountId: string) {
 export async function signout() {
   return cookies().delete('access_token');
 }
+
+export async function changePassword(accountId: string, formdata: any) {
+  console.log('passwords', formdata);
+  const token = await getCookie('access_token');
+  const response = await fetch(`http://localhost:8080/api/accounts/${accountId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token?.value}`,
+    },
+    body: JSON.stringify(formdata),
+  });
+
+  const data = await response.json();
+  if (response.status === StatusCodes.OK) {
+    return { message: data.message };
+  }
+  return { error: data.message };
+}

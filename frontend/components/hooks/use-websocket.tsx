@@ -11,6 +11,9 @@ export default function useWebsocket(token: string) {
   const addMessage = useAppStore((state) => state.addMessage);
   const setMessages = useAppStore((state) => state.setMessages);
   const addChat = useAppStore((state) => state.addChat);
+  const currentChat = useAppStore((state) => state.currentChat);
+  const setChats = useAppStore((state) => state.setChats);
+  const chats = useAppStore((state) => state.chats);
   const url = `ws://localhost:8080?id=${profile.id}`;
 
   useEffect(() => {
@@ -35,6 +38,14 @@ export default function useWebsocket(token: string) {
     });
 
     socket.on('message', (message) => {
+      setChats(chats.map((chat) => chat.id === message.chatId ? ({
+        id: chat.id,
+        contact: chat.contact,
+        participants: chat.participants,
+        name: chat.name,
+        lastMessage: message.content,
+        lastChatTime: message.createdAt,
+      }) : chat));
       addMessage(message);
     });
 

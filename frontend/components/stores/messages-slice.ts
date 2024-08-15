@@ -1,6 +1,6 @@
-import { IMessage } from "@/lib/types/IMessage";
-import { StateCreator } from "zustand";
-import { IChat } from "@/lib/types/IChat";
+import { IMessage } from '@/lib/types/IMessage';
+import { StateCreator } from 'zustand';
+import { IChat } from '@/lib/types/IChat';
 
 export interface MessagesSlice {
   messages: IMessage[];
@@ -17,18 +17,21 @@ const createMessageSlice: StateCreator<MessagesSlice> = (set) => ({
 
   setMessages: (messages: IMessage[], chat: IChat) =>
     set({ messages, currentChat: chat }),
-  addMessage: (message: IMessage) =>
-    set((state) => ({
-      messages:
-        state.messages.length > 0 ? [...state.messages, message] : [message],
-      currentChat: state.currentChat
-        ? {
+  addMessage: (message: IMessage) => {
+    set((state) => {
+      if (state.currentChat?.id === message.chatId)
+        return ({
+          messages:
+            state.messages.length > 0 ? [...state.messages, message] : [message],
+          currentChat: {
             ...state.currentChat,
             lastMessage: message.content,
             lastChatTime: message.createdAt,
-          }
-        : undefined,
-    })),
+          },
+        });
+      return state;
+    });
+  },
 });
 
 export default createMessageSlice;

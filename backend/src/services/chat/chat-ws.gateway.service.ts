@@ -27,7 +27,7 @@ export class ChatWsGatewayService {
       id: this.getUUID4(),
       content,
       sender,
-      chat: chatId,
+      chatId: chatId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

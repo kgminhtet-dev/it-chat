@@ -62,21 +62,43 @@ export default function PersonalInto({ type, info, fn }: PersonalInfo) {
             <DialogFooter>
               <Button
                 onClick={async () => {
-                  if (profile && userInfo) {
-                    const data = await fn(type, profile.id, userInfo);
+                  const newInfo = userInfo.trim();
+                  if (type === 'Fullname' && profile?.fullname === newInfo) {
+                    toast({
+                      variant: 'destructive',
+                      title: 'Can\'t change because name you changed is matched with current name.',
+                    });
+                    return;
+                  }
+                  if (type === 'Email' && profile?.email === newInfo) {
+                    toast({
+                      variant: 'destructive',
+                      title: 'Can\'t change because email you changed is matched with current email.',
+                    });
+                    return;
+                  }
+                  if (type === 'Username' && profile?.username === newInfo) {
+                    toast({
+                      variant: 'destructive',
+                      title: 'Can\'t change because username you changed is matched with current username.',
+                    });
+                    return;
+                  }
+                  if (profile && newInfo) {
+                    const data = await fn(type, profile.id, newInfo);
                     if (!data.error) {
                       toast({
                         title: data.message,
                       });
                       switch (type) {
                         case 'Fullname':
-                          setProfile({ ...profile, fullname: userInfo });
+                          setProfile({ ...profile, fullname: newInfo });
                           break;
                         case 'Email':
-                          setProfile({ ...profile, email: userInfo });
+                          setProfile({ ...profile, email: newInfo });
                           break;
                         case 'Username':
-                          setProfile({ ...profile, username: userInfo });
+                          setProfile({ ...profile, username: newInfo });
                           break;
                       }
                     } else {

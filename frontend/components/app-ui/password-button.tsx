@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -13,8 +12,59 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import useAppStore from '@/components/hooks/use-app-store';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { changePassword } from '@/lib/actions';
+import { IProfile } from '@/lib/types/IProfile';
+import { useToast } from '@/components/ui/use-toast';
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  reNewPassword: z.string().min(8, 'Password must be at least 8 characters'),
+});
 
 export default function PasswordButton() {
+  const { toast } = useToast();
+  const profile = useAppStore((state) => state.profile) as IProfile;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(passwordSchema),
+  });
+
+  const onSubmit = async (formdata: any) => {
+    if (formdata.newPassword !== formdata.reNewPassword) {
+      toast({
+        variant: 'destructive',
+        title: 'New password and re-type new password are not match.',
+      });
+      return;
+    }
+    const data = await changePassword(profile.id, formdata);
+    reset({
+      currentPassword: '',
+      newPassword: '',
+      reNewPassword: '',
+    });
+    if (data.error) {
+      toast({
+        variant: 'destructive',
+        title: data.error,
+      });
+      return;
+    }
+    toast({
+      variant: 'default',
+      title: data.message,
+    });
+  };
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -27,31 +77,73 @@ export default function PasswordButton() {
             Make changes to your password here. Click save when you&amp;re done.
           </SheetDescription>
         </SheetHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="currentPassword" className="text-right">
-              Current Password
-            </Label>
-            <Input id="currentPassword" type={'password'} className="col-span-3 border-gray-500" />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 gap-4">
+              <Label htmlFor="currentPassword" className="text-right">
+                Current Password
+              </Label>
+              <div className={'col-span-3'}>
+                <Input
+                  id="currentPassword"
+                  type={'password'}
+                  className="border-gray-500"
+                  {...register('currentPassword')}
+                />
+                <div className="h-4">
+                  {errors.currentPassword && (
+                    <p className="text-red-600">
+                      {errors.currentPassword.message?.toString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <Label htmlFor="newPassword" className="text-right">
+                New Password
+              </Label>
+              <div className={'col-span-3'}>
+                <Input
+                  id="newPassword"
+                  type={'password'}
+                  className="border-gray-500"
+                  {...register('newPassword')}
+                />
+                <div className="h-4">
+                  {errors.newPassword && (
+                    <p className="text-red-600">
+                      {errors.newPassword.message?.toString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-4 gap-4">
+              <Label htmlFor="reNewPassword" className="text-right">
+                Re-type new Password
+              </Label>
+              <div className={'col-span-3'}>
+                <Input
+                  id="reNewPassword"
+                  type={'password'}
+                  className="border-gray-500"
+                  {...register('reNewPassword')}
+                />
+                <div className="h-2">
+                  {errors.reNewPassword && (
+                    <p className="text-red-600">
+                      {errors.reNewPassword.message?.toString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="newPassword" className="text-right">
-              New Password
-            </Label>
-            <Input id="newPassword" type={'password'} className="col-span-3 border-gray-500" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="reNewPassword" className="text-right">
-              Re-type new Password
-            </Label>
-            <Input id="reNewPassword" type={'password'} className="col-span-3 border-gray-500" />
-          </div>
-        </div>
-        <SheetFooter>
-          <SheetClose asChild>
+          <SheetFooter>
             <Button type="submit">Save changes</Button>
-          </SheetClose>
-        </SheetFooter>
+          </SheetFooter>
+        </form>
       </SheetContent>
     </Sheet>
   );
