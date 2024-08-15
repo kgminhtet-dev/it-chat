@@ -11,6 +11,7 @@ import { shortName } from '@/lib/utils';
 import { getChat } from '@/lib/web-socket-actions';
 import { getMessages, searchChatFormHistory } from '@/lib/actions';
 import { IChat } from '@/lib/types/IChat';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   chatId?: string;
@@ -19,8 +20,8 @@ interface Props {
 }
 
 export default function SearchListItem({ chatId, foundUser, clearSearchTerm }: Props) {
-  console.log('founded user ', foundUser);
   const { toast } = useToast();
+  const router = useRouter();
   const socket = useAppStore((state) => state.socket) as Socket;
   const profile = useAppStore((state) => state.profile) as IProfile;
   const setMessages = useAppStore((state) => state.setMessages);
@@ -35,7 +36,6 @@ export default function SearchListItem({ chatId, foundUser, clearSearchTerm }: P
             title: 'You can\'t sent message to yourself.',
           });
 
-        console.log('username', profile.username, foundUser.username);
         if (!chatId) {
           getChat(socket, {
             sender: profile.username,
@@ -47,6 +47,7 @@ export default function SearchListItem({ chatId, foundUser, clearSearchTerm }: P
           setMessages(messages, chat);
         }
         clearSearchTerm('');
+        router.push('/chat');
       }}
       className="flex items-center rounded-md gap-4 p-2"
     >

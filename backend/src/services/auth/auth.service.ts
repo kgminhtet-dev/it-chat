@@ -8,6 +8,7 @@ import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { SignupDto } from './dto/signup.dto';
 import { IChat } from '../../types/chat';
 import { IAccount } from '../../types/account';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +34,13 @@ export class AuthService {
       );
     }
 
-    const account = await this.accountRepoService.create(signupDto);
+    const salt = await bcrypt.genSalt();
+    const password = signupDto.password;
+    const hash = await bcrypt.hash(password, salt);
+    const account = await this.accountRepoService.create({
+      ...signupDto,
+      password: hash,
+    });
     const payload = { sub: account.id, username: account.username };
     return {
       profile: {
@@ -54,7 +61,8 @@ export class AuthService {
       throw new UnauthorizedException(`Incorrect email.`);
     }
 
-    if (password !== account.password) {
+    const isMatch = await bcrypt.compare(password, account.password);
+    if (!isMatch) {
       throw new UnauthorizedException(`Incorrect password.`);
     }
 

@@ -3,9 +3,11 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserProfileService {
@@ -137,11 +139,15 @@ export class UserProfileService {
       );
 
     const account = await this.accountRepoService.findById(id);
-    if (account.password !== currentPassword)
-      throw new BadRequestException('Current password is not correct.');
+    const isMatch = await bcrypt.compare(currentPassword, account.password);
+    if (!isMatch) {
+      throw new UnauthorizedException(`Current password is not correct.`);
+    }
 
+    const salt = await bcrypt.genSalt();
+    const hash = await bcrypt.hash(newPassword, salt);
     const updatedAccount = await this.accountRepoService.update(id, {
-      password: newPassword,
+      password: hash,
     });
 
     if (updatedAccount.affected === 0)

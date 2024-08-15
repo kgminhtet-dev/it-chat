@@ -14,7 +14,6 @@ export default function ChatLayout({ children }: Readonly<{ children: React.Reac
   const profile = useAppStore((state) => state.profile) as IProfile;
   const chats = useAppStore((state) => state.chats);
   const token = useAppStore((state) => state.token);
-  const socket = useAppStore((state) => state.socket);
 
   if (!profile) {
     return <NotProfile />;

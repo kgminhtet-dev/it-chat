@@ -82,7 +82,6 @@ export async function getMessages(accountId: string, chatId: string) {
     },
   );
   const data = await response.json();
-  console.log('messages ', data);
   if (response.status === StatusCodes.OK) {
     return data;
   }
@@ -172,7 +171,6 @@ export async function signout() {
 }
 
 export async function changePassword(accountId: string, formdata: any) {
-  console.log('passwords', formdata);
   const token = await getCookie('access_token');
   const response = await fetch(`http://localhost:8080/api/accounts/${accountId}`, {
     method: 'PATCH',
@@ -188,4 +186,8 @@ export async function changePassword(accountId: string, formdata: any) {
     return { message: data.message };
   }
   return { error: data.message };
+}
+
+export async function alreadyChats(chats: IChat[], username: string) {
+  return chats.filter(chat => chat.contact.username.toLowerCase().includes(username))[0];
 }

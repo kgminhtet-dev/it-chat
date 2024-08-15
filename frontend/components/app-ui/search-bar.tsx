@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import SearchListItem from '@/components/app-ui/search-list-item';
 import { SearchIcon } from 'lucide-react';
-import { searchChatByName, searchUsername } from '@/lib/actions';
+import { alreadyChats, searchChatByName, searchUsername } from '@/lib/actions';
 import useAppStore from '@/components/hooks/use-app-store';
 import { IAccount } from '@/lib/types/IAccount';
 import { useToast } from '@/components/ui/use-toast';
@@ -33,6 +33,14 @@ export default function SearchBar() {
             if (e.key === 'Enter' && searchTerm.length > 0) {
               const name = searchTerm.toLowerCase();
               if (name[0] === '@') {
+                const chat = await alreadyChats(chats, name);
+                if (chat) {
+                  setSearchResults([{
+                    account: chat.contact,
+                    chatId: chat.id,
+                  }]);
+                  return;
+                }
                 const username = await searchUsername(name);
                 if (username.error) {
                   toast({
