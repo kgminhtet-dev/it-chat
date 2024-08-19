@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  console.info(`${process.env.NODE_ENV || 'development'} is started.`);
   await app.listen(8080);
 }
 

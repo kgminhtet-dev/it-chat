@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function getProfile() {
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const token = await getCookie('access_token');
   const response = await fetch(`${url}/accounts?kind=profile`, {
     headers: {
@@ -39,7 +39,7 @@ export async function getCookie(name: string) {
 }
 
 export async function signin(formdata: any) {
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const response = await fetch(`${url}/auth/signin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -57,7 +57,7 @@ export async function signin(formdata: any) {
 }
 
 export async function signup(formdata: any) {
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const response = await fetch(`${url}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -75,7 +75,7 @@ export async function signup(formdata: any) {
 }
 
 export async function getMessages(accountId: string, chatId: string) {
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const token = await getCookie('access_token');
   const response = await fetch(
     `${url}/accounts/${accountId}/chats/${chatId}/messages`,
@@ -97,7 +97,7 @@ export async function searchChatByName(chats: IChat[], fullname: string) {
 }
 
 export async function searchUsername(username: string) {
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const token = await getCookie('access_token');
   const response = await fetch(
     `${url}/accounts?username=${username}`,
@@ -123,7 +123,7 @@ export async function searchChatFormHistory(chats: IChat[], chatId: string) {
 
 export async function updateAccount(type: string, accountId: string, accountInfo: string) {
   let requestData;
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
 
   switch (type) {
     case 'Fullname':
@@ -155,7 +155,7 @@ export async function updateAccount(type: string, accountId: string, accountInfo
 
 export async function deactivateAccount(accountId: string) {
   const token = await getCookie('access_token');
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const response = await fetch(`${url}/accounts/${accountId}/actions`, {
     method: 'POST',
     headers: {
@@ -179,7 +179,7 @@ export async function signout() {
 
 export async function changePassword(accountId: string, formdata: any) {
   const token = await getCookie('access_token');
-  const url = 'https://it-chat-server.vercel.app/api';
+  const url = 'http://localhost:8080/api';
   const response = await fetch(`${url}/accounts/${accountId}`, {
     method: 'PATCH',
     headers: {

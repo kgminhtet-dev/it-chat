@@ -8,10 +8,16 @@ import { FriendModule } from './services/friend/friend.module';
 import { NotificationModule } from './services/notification/notification.module';
 import { ConfigModule } from '@nestjs/config';
 import { ChatModule } from './services/chat/chat.module';
+import * as path from 'node:path';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: path.resolve(
+        `.env.${process.env.NODE_ENV || 'development'}`,
+      ),
+      isGlobal: true,
+    }),
     RepositoryModule,
     AuthModule,
     UserProfileModule,
