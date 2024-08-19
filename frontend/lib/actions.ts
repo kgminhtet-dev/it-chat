@@ -6,9 +6,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function getProfile() {
-  const url = 'http://localhost:8080/api';
   const token = await getCookie('access_token');
-  const response = await fetch(`${url}/accounts?kind=profile`, {
+  const url = process.env.URL;
+  const response = await fetch(`${url}/api/accounts?kind=profile`, {
     headers: {
       Authorization: `Bearer ${token?.value}`,
     },
@@ -39,8 +39,8 @@ export async function getCookie(name: string) {
 }
 
 export async function signin(formdata: any) {
-  const url = 'http://localhost:8080/api';
-  const response = await fetch(`${url}/auth/signin`, {
+  const url = process.env.URL;
+  const response = await fetch(`${url}/api/auth/signin`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formdata),
@@ -57,8 +57,8 @@ export async function signin(formdata: any) {
 }
 
 export async function signup(formdata: any) {
-  const url = 'http://localhost:8080/api';
-  const response = await fetch(`${url}/auth/signup`, {
+  const url = process.env.URL;
+  const response = await fetch(`${url}/api/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(formdata),
@@ -75,11 +75,9 @@ export async function signup(formdata: any) {
 }
 
 export async function getMessages(accountId: string, chatId: string) {
-  const url = 'http://localhost:8080/api';
   const token = await getCookie('access_token');
-  const response = await fetch(
-    `${url}/accounts/${accountId}/chats/${chatId}/messages`,
-    {
+  const url = process.env.URL;
+  const response = await fetch(`${url}/api/accounts/${accountId}/chats/${chatId}/messages`, {
       headers: {
         Authorization: `Bearer ${token?.value}`,
       },
@@ -97,10 +95,10 @@ export async function searchChatByName(chats: IChat[], fullname: string) {
 }
 
 export async function searchUsername(username: string) {
-  const url = 'http://localhost:8080/api';
   const token = await getCookie('access_token');
+  const url = process.env.URL;
   const response = await fetch(
-    `${url}/accounts?username=${username}`,
+    `${url}/api/accounts?username=${username}`,
     {
       headers: {
         Authorization: `Bearer ${token?.value}`,
@@ -123,8 +121,7 @@ export async function searchChatFormHistory(chats: IChat[], chatId: string) {
 
 export async function updateAccount(type: string, accountId: string, accountInfo: string) {
   let requestData;
-  const url = 'http://localhost:8080/api';
-
+  const url = process.env.URL;
   switch (type) {
     case 'Fullname':
       requestData = JSON.stringify({ fullname: accountInfo });
@@ -137,7 +134,7 @@ export async function updateAccount(type: string, accountId: string, accountInfo
       break;
   }
   const token = await getCookie('access_token');
-  const response = await fetch(`${url}/accounts/${accountId}`, {
+  const response = await fetch(`${url}/api/accounts/${accountId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -155,8 +152,8 @@ export async function updateAccount(type: string, accountId: string, accountInfo
 
 export async function deactivateAccount(accountId: string) {
   const token = await getCookie('access_token');
-  const url = 'http://localhost:8080/api';
-  const response = await fetch(`${url}/accounts/${accountId}/actions`, {
+  const url = process.env.URL;
+  const response = await fetch(`${url}/api/accounts/${accountId}/actions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -179,8 +176,8 @@ export async function signout() {
 
 export async function changePassword(accountId: string, formdata: any) {
   const token = await getCookie('access_token');
-  const url = 'http://localhost:8080/api';
-  const response = await fetch(`${url}/accounts/${accountId}`, {
+  const url = process.env.URL;
+  const response = await fetch(`${url}/api/accounts/${accountId}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

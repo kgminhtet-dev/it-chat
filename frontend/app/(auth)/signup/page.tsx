@@ -14,10 +14,10 @@ import useAppStore from '@/components/hooks/use-app-store';
 import { useState } from 'react';
 
 const signupSchema = z.object({
-  fullname: z.string().min(1, 'Fullname is required'),
-  username: z.string().min(1, 'Username is required'),
+  fullname: z.string().min(4, 'Fullname is required'),
+  username: z.string().min(4, 'Username is required'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters long'),
+  password: z.string().min(8, 'Password must be at least 8 characters long'),
 });
 
 export default function Signup() {

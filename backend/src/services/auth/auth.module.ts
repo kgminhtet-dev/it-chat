@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { RepositoryModule } from '../repository/repository.module';
 import { AuthController } from './auth.controller';
@@ -10,11 +10,14 @@ import { AuthWsGuard } from './auth-ws.guard';
 @Module({
   imports: [
     RepositoryModule,
-    ConfigModule.forRoot(),
-    JwtModule.register({
-      global: true,
-      secret: process.env.JWT_ACCESS_TOKEN,
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_ACCESS_TOKEN'),
+        signOptions: { expiresIn: '1d' },
+        global: true,
+      }),
     }),
   ],
   exports: [AuthService, AuthWsGuard],

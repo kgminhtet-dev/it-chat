@@ -9,6 +9,7 @@ import { NotificationModule } from './services/notification/notification.module'
 import { ConfigModule } from '@nestjs/config';
 import { ChatModule } from './services/chat/chat.module';
 import * as path from 'node:path';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import * as path from 'node:path';
       ),
       isGlobal: true,
     }),
+    JwtModule,
     RepositoryModule,
     AuthModule,
     UserProfileModule,

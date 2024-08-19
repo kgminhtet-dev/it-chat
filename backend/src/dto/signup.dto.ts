@@ -8,7 +8,7 @@ export class SignupDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(5, 20)
+  @Length(4, 20)
   readonly username: string;
 
   @IsNotEmpty()

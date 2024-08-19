@@ -76,6 +76,7 @@ export class AppController {
     @Query('kind') kind: string,
     @Query('username') username: string,
   ) {
+    console.log('username ', username);
     if (kind === 'profile')
       return this.userService.getAccountById(request.payload.sub);
     if (username) return this.userService.getProfile(username);
