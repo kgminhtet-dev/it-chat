@@ -16,12 +16,10 @@ import { shortName } from "@/lib/utils";
 import { Cross2Icon } from "@radix-ui/react-icons";
 
 interface Props {
-  setPendings: Function;
   friendRequest: IFriendRequest;
 }
 
 export default function SendFriendRequest({
-  setPendings,
   friendRequest,
 }: Props): JSX.Element {
   const { toast } = useToast();
@@ -57,9 +55,6 @@ export default function SendFriendRequest({
                   title: data.error,
                 });
               else {
-                setPendings((pendings: IFriendRequest[]) =>
-                  pendings.filter((pending) => pending.id !== friendRequest.id),
-                );
                 toast({
                   variant: "default",
                   title: data.message,

@@ -1,6 +1,3 @@
-"use client";
-
-import useAppStore from "@/components/hooks/use-app-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IAccount } from "@/lib/types/IAccount";
 import { shortName } from "@/lib/utils";
@@ -11,8 +8,6 @@ interface Props {
 }
 
 export default function FriendListItem({ friend }: Props) {
-  const setFriendProfile = useAppStore((state) => state.setFriendProfile);
-
   return (
     <Link
       href={`/chat/profile/${friend.id}`}

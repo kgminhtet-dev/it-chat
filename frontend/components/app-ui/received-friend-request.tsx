@@ -11,12 +11,10 @@ import { shortName } from "@/lib/utils";
 import { CheckIcon, Cross2Icon } from "@radix-ui/react-icons";
 
 interface Props {
-  setFriendRequests: Function;
   friendRequest: IFriendRequest;
 }
 
 export default function ReceivedFriendRequest({
-  setFriendRequests,
   friendRequest,
 }: Props): JSX.Element {
   const { toast } = useToast();
@@ -51,9 +49,6 @@ export default function ReceivedFriendRequest({
                 title: data.error,
               });
             else {
-              setFriendRequests((reqs: IFriendRequest[]) =>
-                reqs.filter((req) => req.id !== friendRequest.id),
-              );
               toast({
                 variant: "default",
                 title: data.message,
@@ -78,9 +73,6 @@ export default function ReceivedFriendRequest({
                 title: data.error,
               });
             else {
-              setFriendRequests((reqs: IFriendRequest[]) =>
-                reqs.filter((req) => req.id !== friendRequest.id),
-              );
               toast({
                 variant: "default",
                 title: data.message,

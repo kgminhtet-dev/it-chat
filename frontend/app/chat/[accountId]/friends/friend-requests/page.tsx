@@ -1,38 +1,32 @@
-'use client';
+import ReceivedFriendRequest from "@/components/app-ui/received-friend-request";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { getFriendRequests } from "@/lib/actions";
+import { IFriendRequest } from "@/lib/types/IFriendRequest";
 
-import ReceivedFriendRequest from '@/components/app-ui/received-friend-request';
-import useAppStore from '@/components/hooks/use-app-store';
-import { toast } from '@/components/ui/use-toast';
-import { getFriendRequests } from '@/lib/actions';
-import { IFriendRequest } from '@/lib/types/IFriendRequest';
-import { IProfile } from '@/lib/types/IProfile';
-import { useEffect, useState } from 'react';
-
-export default function FriendRequests() {
-  const profile = useAppStore((state) => state.profile) as IProfile;
-  const [friendRequests, setFriendRequests] = useState<IFriendRequest[]>([]);
-
-  useEffect(() => {
-    getFriendRequests(profile.id).then((data) => {
-      if (data.error) {
-        toast({
-          variant: 'destructive',
-          title: data.message,
-        });
-        return;
-      }
-      setFriendRequests(data);
-    })
-      .catch((error) => console.error(error));
-  }, [profile.id]);
+export default async function FriendRequests({
+  params,
+}: {
+  params: { accountId: string };
+}) {
+  const friendRequests: IFriendRequest[] = await getFriendRequests(
+    params.accountId,
+  );
 
   return (
-    <div className={'grid-rows-11 col-span-3 flex flex-col gap-1 pl-2 pr-2'}>
-      {
-        friendRequests.length > 0
-        && (friendRequests.map((friendRequest, index) =>
-          <ReceivedFriendRequest key={index} friendRequest={friendRequest} setFriendRequests={setFriendRequests} />))
-      }
+    <div className={"w-full h-full pl-2 pr-2 overflow-auto"}>
+      {friendRequests.length > 0 ? (
+        <ScrollArea className="flex flex-col gap-1">
+          {friendRequests.map((friendRequest, index) => (
+            <ReceivedFriendRequest key={index} friendRequest={friendRequest} />
+          ))}
+        </ScrollArea>
+      ) : (
+        <div className={"h-full flex justify-center items-center"}>
+          <p className="shadow bg-gray-300 text-gray-500 rounded-full p-1 pr-5 pl-5 text-sm">
+            There&apos;s no friend requests yet.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

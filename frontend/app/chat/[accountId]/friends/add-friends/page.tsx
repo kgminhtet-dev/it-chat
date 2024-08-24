@@ -1,17 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { sendFriendRequest } from '@/lib/actions';
 import useAppStore from '@/components/hooks/use-app-store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
+import { sendFriendRequest } from '@/lib/actions';
 import { IProfile } from '@/lib/types/IProfile';
+import { useState } from 'react';
 
 export default function AddFriends() {
   const { toast } = useToast();
   const profile = useAppStore((state) => state.profile) as IProfile;
-  const friends = useAppStore((state) => state.friends);
   const [username, setUsername] = useState('');
 
   return (
@@ -27,17 +26,6 @@ export default function AddFriends() {
         <Button
           onClick={async () => {
             if (username.trim()) {
-              if (friends && friends.length < 10) {
-                const isFriend = friends
-                  .find((friend) => friend.username.slice(1) === username);
-                if (isFriend) {
-                  toast({
-                    variant: 'destructive',
-                    title: 'You\'re already friend.',
-                  });
-                  return;
-                }
-              }
               const data = await sendFriendRequest(profile.id, username);
               if (data.error) {
                 toast({

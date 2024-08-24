@@ -258,6 +258,7 @@ export async function sendFriendRequest(accountId: string, friendName: string) {
 
   const data = await response.json();
   if (response.status === StatusCodes.CREATED) {
+    revalidatePath(`/chat/${accountId}/friends/pendings`);
     return { message: data.message };
   }
   return { error: data.message };
@@ -326,6 +327,7 @@ export async function cancelFriendRequest(
 
   const data = await response.json();
   if (response.status === StatusCodes.OK) {
+    revalidatePath(`/chat/${accountId}/friends/pendings`);
     return data;
   }
   return { error: data.message };
@@ -354,6 +356,7 @@ export async function rejectFriendRequest(
 
   const data = await response.json();
   if (response.status === StatusCodes.OK) {
+    revalidatePath(`/chat/${accountId}/friend-requests`);
     return data;
   }
   return { error: data.message };

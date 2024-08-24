@@ -1,7 +1,6 @@
 "use client";
 
 import useAppStore from "@/components/hooks/use-app-store";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { IProfile } from "@/lib/types/IProfile";
 import Link from "next/link";
 
@@ -44,9 +43,7 @@ export default function FriendLayout({
           </Link>
         </div>
       </div>
-      <ScrollArea className={"row-span-12 overflow-auto"}>
-        {children}
-      </ScrollArea>
+      <div className={"row-span-11 overflow-auto"}>{children}</div>
     </main>
   );
 }
