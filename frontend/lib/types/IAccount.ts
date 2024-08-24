@@ -3,4 +3,5 @@ export interface IAccount {
   fullname: string;
   username: string;
   isDeactivated: boolean;
+  relationship?: 'friend' | 'unfriend';
 }

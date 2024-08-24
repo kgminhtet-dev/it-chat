@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { getCookie } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
 
-export default function NotToken() {
+export default function FetchToken() {
   const router = useRouter();
   const setToken = useAppStore((state) => state.setToken);
 
@@ -14,7 +14,7 @@ export default function NotToken() {
     getCookie('access_token')
       .then((token) => setToken(token?.value))
       .catch((error) => router.push('/signin'));
-  }, []);
+  }, [router, setToken]);
 
   return (
     <main className={'w-screen h-screen flex justify-center items-center'}>

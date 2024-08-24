@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { shortName } from '@/lib/utils';
-import { IProfile } from '@/lib/types/IProfile';
-import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IProfile } from "@/lib/types/IProfile";
+import { shortName } from "@/lib/utils";
+import Link from "next/link";
 
 interface Props {
   profile: IProfile;
@@ -9,20 +9,24 @@ interface Props {
 
 export default function ProfileBar({ profile }: Props) {
   return (
-    <Link
-      href={'/chat/profile'}
-      className={'row-span-1 p-1 pr-2 pl-2'}
-    >
-      <div
-        className="flex justify-end pr-2 pl-2 h-full items-center rounded-md gap-4 bg-primary text-primary-foreground cursor-pointer transition-colors">
-        <div className="flex items-center justify-between">
-          <p className="font-semibold text-sm">{profile.fullname}</p>
-        </div>
-        <Avatar className="h-8 w-8 text-foreground">
+    <div className={"row-span-1 flex justify-between items-center pl-2 pr-2"}>
+      <Link
+        href={`/chat/${profile.id}/friends/add-friends`}
+        className={
+          "p-1 pr-3 pl-3 text-sm text-primary-foreground bg-blue-500 rounded border" +
+          " border-gray-300"
+        }
+      >
+        Add Friend
+      </Link>
+      <Link href={"/chat/profile"} className={"rounded-full shadow-md"}>
+        <Avatar>
           <AvatarImage src="" />
-          <AvatarFallback>{shortName(profile.fullname)}</AvatarFallback>
+          <AvatarFallback className={"bg-green-600 text-white font-bold"}>
+            {shortName(profile.fullname)}
+          </AvatarFallback>
         </Avatar>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

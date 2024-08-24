@@ -1,6 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Account, Chat, Message, Notification } from './entities/entities';
+import {
+  Account,
+  Chat,
+  FriendRequest,
+  Message,
+  Notification,
+} from './entities/entities';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RepositoryService } from './repository.service';
 import { RepositoryController } from './repository.controller';
@@ -8,6 +14,7 @@ import { AccountRepoService } from './Account/account-repo.service';
 import { MessageRepoService } from './Message/message-repo.service';
 import { ChatRepoService } from './Chat/chat-repo.service';
 import { NotificationRepoService } from './Notification/notification-repo.service';
+import { FriendRequestRepoService } from './FriendRequest/friendRequest-repo.service';
 
 @Module({
   imports: [
@@ -21,18 +28,25 @@ import { NotificationRepoService } from './Notification/notification-repo.servic
         username: configService.get<string>('POSTGRES_USER'),
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DATABASE'),
-        entities: [Account, Chat, Message, Notification],
+        entities: [Account, FriendRequest, Chat, Message, Notification],
         synchronize: process.env.NODE_ENV === 'development',
         ssl: process.env.NODE_ENV === 'production',
       }),
     }),
-    TypeOrmModule.forFeature([Account, Chat, Message, Notification]),
+    TypeOrmModule.forFeature([
+      Account,
+      FriendRequest,
+      Chat,
+      Message,
+      Notification,
+    ]),
   ],
   exports: [
     AccountRepoService,
     MessageRepoService,
     ChatRepoService,
     NotificationRepoService,
+    FriendRequestRepoService,
   ],
   controllers: [RepositoryController],
   providers: [
@@ -41,6 +55,7 @@ import { NotificationRepoService } from './Notification/notification-repo.servic
     MessageRepoService,
     ChatRepoService,
     NotificationRepoService,
+    FriendRequestRepoService,
   ],
 })
 export class RepositoryModule {}

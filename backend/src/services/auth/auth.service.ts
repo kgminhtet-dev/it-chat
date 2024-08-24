@@ -4,11 +4,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { SignupDto } from './dto/signup.dto';
 import { IChat } from '../../types/chat';
 import { IAccount } from '../../types/account';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -82,7 +82,6 @@ export class AuthService {
   }
 
   signout(username: string) {
-    console.info(`${username} is successfully signed out.`);
     return {
       message: 'Successfully signout.',
     };

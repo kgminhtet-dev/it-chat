@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -16,7 +17,6 @@ import { Request } from 'express';
 import { AppService } from './app.service';
 import { UserProfileService } from './services/user-profile/user-profile.service';
 import { ChatService } from './services/chat/chat.service';
-import { FriendService } from './services/friend/friend.service';
 import { NotificationService } from './services/notification/notification.service';
 import { IPayload } from './types/payload';
 import { AuthGuard } from './services/auth/auth.guard';
@@ -25,6 +25,7 @@ import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ActionDto } from './dto/action.dto';
+import { FriendRequestDto } from './dto/friend-request.dto';
 
 @Controller('api')
 export class AppController {
@@ -33,7 +34,6 @@ export class AppController {
     private readonly authService: AuthService,
     private readonly userService: UserProfileService,
     private readonly chatService: ChatService,
-    private readonly friendService: FriendService,
     private readonly notificationService: NotificationService,
   ) {}
 
@@ -76,10 +76,15 @@ export class AppController {
     @Query('kind') kind: string,
     @Query('username') username: string,
   ) {
-    console.log('username ', username);
     if (kind === 'profile')
       return this.userService.getAccountById(request.payload.sub);
     if (username) return this.userService.getProfile(username);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('accounts/:accountId')
+  async getAccountById(@Param('accountId') accountId: string) {
+    return this.userService.getProfileById(accountId);
   }
 
   @UseGuards(AuthGuard)
@@ -96,16 +101,81 @@ export class AppController {
   @HttpCode(HttpStatus.OK)
   @Post('accounts/:accountId/actions')
   async handleActions(
-    @Body() actionDto: ActionDto,
+    @Body() { action }: ActionDto,
     @Req() request: Request & { payload: IPayload },
   ) {
-    switch (actionDto.action) {
+    switch (action) {
       case 'deactivate':
         return this.userService.deactivate(request.payload.sub);
       default:
-        throw new BadRequestException(
-          `${actionDto.action} is invalid method name.`,
-        );
+        throw new BadRequestException(`${action} is invalid method name.`);
     }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('accounts/:accountId/friends')
+  async listFriends(@Param('accountId') accountId: string) {
+    return this.userService.getFriendList(accountId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('accounts/:accountId/friends/:friendId')
+  async unFriend(
+    @Param('accountId') accountId: string,
+    @Param('friendId') friendId: string,
+  ) {
+    return this.userService.removeFriend(accountId, friendId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('accounts/:accountId/friend-requests/pendings')
+  async getFriendRequestPendings(@Param('accountId') accountId: string) {
+    return this.userService.getFriendRequestPendings(accountId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('accounts/:accountId/friend-requests')
+  async getFriendRequests(@Param('accountId') accountId: string) {
+    return this.userService.getFriendRequests(accountId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('accounts/:accountId/friend-requests')
+  async sentFriendRequest(
+    @Req() request: Request & { payload: IPayload },
+    @Param('accountId') accountId: string,
+    @Body() { friendName }: { friendName: string },
+  ) {
+    return this.userService.sendRequest(accountId, friendName);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('accounts/:accountId/friend-requests/:requestId')
+  async handleFriendRequest(
+    @Param('requestId') requestId: string,
+    @Body() { requestName }: FriendRequestDto,
+  ) {
+    if (!requestId)
+      throw new BadRequestException('undefined friend request id.');
+    switch (requestName) {
+      case 'cancel friend request':
+        return this.userService.cancelRequest(requestId);
+      case 'reject friend request':
+        return this.userService.rejectRequest(requestId);
+      case 'confirm friend request':
+        return this.userService.confirmRequest(requestId);
+      default:
+        throw new BadRequestException(`Invalid method name ${requestName}`);
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/accounts/:accountId/friends/:friendId')
+  async removeFriend(
+    @Param('accountId') accountId: string,
+    @Param('friendId') friendId: string,
+  ) {
+    return this.userService.removeFriend(accountId, friendId);
   }
 }

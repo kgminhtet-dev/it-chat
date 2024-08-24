@@ -47,11 +47,40 @@ export class Account {
   })
   friends: Account[];
 
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender, {
+    cascade: true,
+  })
+  sentFriendRequests: FriendRequest[];
+
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver, {
+    cascade: true,
+  })
+  receivedFriendRequests: FriendRequest[];
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_DATE' })
   createdAt: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_DATE' })
   updatedAt: Date;
+}
+
+@Entity()
+export class FriendRequest {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
+
+  @ManyToOne(() => Account, (account) => account.sentFriendRequests, {
+    onDelete: 'CASCADE',
+  })
+  sender: Account;
+
+  @ManyToOne(() => Account, (account) => account.receivedFriendRequests, {
+    onDelete: 'CASCADE',
+  })
+  receiver: Account;
+
+  @Column({ default: 'pending' })
+  status: 'pending' | 'accepted' | 'rejected';
 }
 
 @Entity()
@@ -107,7 +136,7 @@ export class Message {
 
 @Entity()
 export class Notification {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: number;
 
   @Column({ type: 'varchar', length: 255 })

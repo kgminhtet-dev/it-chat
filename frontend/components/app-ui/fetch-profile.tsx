@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import useAppStore from '@/components/hooks/use-app-store';
 
-export default function NotProfile() {
+export default function FetchProfile() {
   const router = useRouter();
   const setProfile = useAppStore((state) => state.setProfile);
   const setChats = useAppStore((state) => state.setChats);

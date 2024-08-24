@@ -8,10 +8,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { IAccount } from '@/lib/types/IAccount';
 import { IProfile } from '@/lib/types/IProfile';
 import { shortName } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import { getChat } from '@/lib/web-socket-actions';
 import { getMessages, searchChatFormHistory } from '@/lib/actions';
 import { IChat } from '@/lib/types/IChat';
-import { useRouter } from 'next/navigation';
 
 interface Props {
   chatId?: string;
@@ -35,7 +35,6 @@ export default function SearchListItem({ chatId, foundUser, clearSearchTerm }: P
             variant: 'default',
             title: 'You can\'t sent message to yourself.',
           });
-
         if (!chatId) {
           getChat(socket, {
             sender: profile.username,

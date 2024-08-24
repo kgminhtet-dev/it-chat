@@ -8,10 +8,15 @@ import {
 import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { IChangePassword } from '../repository/Account/dto/change-password';
+import { FriendRequestRepoService } from '../repository/FriendRequest/friendRequest-repo.service';
 
 @Injectable()
 export class UserProfileService {
-  constructor(private accountRepoService: AccountRepoService) {}
+  constructor(
+    private readonly accountRepoService: AccountRepoService,
+    private readonly friendRequestRepoService: FriendRequestRepoService,
+  ) {}
 
   async update(id: string, params: UpdateUserDto) {
     if (params.fullname) return this.changeName(id, params.fullname);
@@ -40,8 +45,25 @@ export class UserProfileService {
     };
   }
 
+  async getProfileById(id: string) {
+    const account = await this.accountRepoService.findById(id);
+    if (!account) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    if (!account || account.isDeactivated) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    return {
+      id: account.id,
+      fullname: account.fullname,
+      username: '@' + account.username,
+    };
+  }
+
   async getAccountById(id: string) {
-    const account = await this.accountRepoService.findById(id, true);
+    const account = await this.accountRepoService.findById(id, { chats: true });
     if (!account) {
       throw new NotFoundException(`User not found.`);
     }
@@ -77,6 +99,61 @@ export class UserProfileService {
       createdAt: account.createdAt,
       updatedAt: account.updatedAt,
     };
+  }
+
+  async getFriendList(id: string) {
+    const account = await this.accountRepoService.findById(id, {
+      friends: true,
+    });
+    return account.friends.map((friend) => ({
+      id: friend.id,
+      fullname: friend.fullname,
+      username: '@' + friend.username,
+    }));
+  }
+
+  async getFriendRequestPendings(id: string) {
+    try {
+      const friendRequests =
+        await this.friendRequestRepoService.findAllSentRequest(id);
+      if (friendRequests.length === 0) return [];
+      return friendRequests.map((friendRequest) => ({
+        id: friendRequest.id,
+        status: friendRequest.status,
+        receiver: {
+          id: friendRequest.receiver.id,
+          fullname: friendRequest.receiver.fullname,
+          username: friendRequest.receiver.username,
+        },
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'InternalServerError',
+        error.toString(),
+      );
+    }
+  }
+
+  async getFriendRequests(id: string) {
+    try {
+      const friendRequests =
+        await this.friendRequestRepoService.findAllReceivedRequest(id);
+      if (friendRequests.length === 0) return [];
+      return friendRequests.map((friendRequest) => ({
+        id: friendRequest.id,
+        status: friendRequest.status,
+        sender: {
+          id: friendRequest.sender.id,
+          fullname: friendRequest.sender.fullname,
+          username: friendRequest.sender.username,
+        },
+      }));
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'InternalServerError',
+        error.toString(),
+      );
+    }
   }
 
   async changeName(id: string, fullname: string) {
@@ -130,7 +207,7 @@ export class UserProfileService {
     };
   }
 
-  async changePassword(id: string, params: any) {
+  async changePassword(id: string, params: IChangePassword) {
     const { currentPassword, newPassword } = params;
 
     if (currentPassword === newPassword)
@@ -173,18 +250,99 @@ export class UserProfileService {
     };
   }
 
-  async activate(id: string) {
-    const account = await this.accountRepoService.findById(id);
-    if (!account.isDeactivated)
-      throw new BadRequestException('Account is already activated.');
+  async sendRequest(senderId: string, receiverName: string) {
+    const sender = await this.accountRepoService.findById(senderId, {
+      friends: true,
+    });
+    if (!sender) throw new NotFoundException('Invalid account.');
 
-    const updatedResult = await this.accountRepoService.activate(id);
+    if (sender.username === receiverName)
+      throw new BadRequestException("Can't add yourself.");
 
-    if (updatedResult.affected === 0)
-      throw new InternalServerErrorException('Something went wrong.');
+    const receiver = await this.accountRepoService.findByUsername(receiverName);
+    if (!receiver) throw new NotFoundException('Invalid username.');
 
-    return {
-      message: `${account.fullname} is activated successfully.`,
-    };
+    const isFriend = sender.friends.find(
+      (friend) => friend.username === receiverName,
+    );
+    if (isFriend) throw new BadRequestException("You're already friend.");
+
+    try {
+      await this.friendRequestRepoService.createFriendRequest(sender, receiver);
+      return { message: 'Successfully Send Friend Request.' };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Internal Server Error',
+        error.toString(),
+      );
+    }
+  }
+
+  async cancelRequest(friendRequestId: string) {
+    return this.friendRequestRepoService.remove(friendRequestId);
+  }
+
+  async rejectRequest(friendRequestId: string) {
+    try {
+      await this.friendRequestRepoService.remove(friendRequestId);
+      return { message: 'Rejected friend request.' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Internal Server Error');
+    }
+  }
+
+  async confirmRequest(friendRequestId: string) {
+    try {
+      await this.addFriend(friendRequestId);
+      await this.friendRequestRepoService.remove(friendRequestId);
+      return { message: "You're now friend." };
+    } catch (error) {
+      throw new InternalServerErrorException(error.toString());
+    }
+  }
+
+  async addFriend(friendRequestId: string) {
+    const friendRequest =
+      await this.friendRequestRepoService.findById(friendRequestId);
+    if (!friendRequest)
+      throw new NotFoundException('Not found friend request.');
+
+    const { sender, receiver } = friendRequest;
+
+    sender.friends.push(receiver);
+    receiver.friends.push(sender);
+    await this.accountRepoService.save(receiver);
+    await this.accountRepoService.save(sender);
+    return true;
+  }
+
+  async removeFriend(accountId: string, friendId: string) {
+    const account = await this.accountRepoService.findById(accountId, {
+      friends: true,
+    });
+    if (!account) throw new NotFoundException('Account does not exist.');
+
+    const friend = await this.accountRepoService.findById(friendId, {
+      friends: true,
+    });
+    if (!friend) throw new NotFoundException('Friend does not exist.');
+
+    account.friends = account.friends.filter(
+      (friend) => friend.id !== friendId,
+    );
+
+    friend.friends = friend.friends.filter(
+      (account) => account.id !== accountId,
+    );
+    try {
+      await this.accountRepoService.save(friend);
+      await this.accountRepoService.save(account);
+      return {
+        message: 'Successfully unfriend.',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException('Internal Server Error');
+    }
   }
 }

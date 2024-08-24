@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   AlertDialog,
@@ -10,17 +10,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { signout } from '@/lib/actions';
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { signout } from "@/lib/actions";
+import { LogOut } from "lucide-react";
+import useAppStore from "../hooks/use-app-store";
 
 export default function SignoutButton() {
-  const router = useRouter();
+  const setMessage = useAppStore((state) => state.setMessages);
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline" className={'absolute w-max self-end m-1'}>Signout</Button>
+        <Button
+          size="icon"
+          variant="destructive"
+          className="m-1 absolute self-end"
+        >
+          <LogOut />
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -30,11 +38,16 @@ export default function SignoutButton() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>No</AlertDialogCancel>
-          <AlertDialogAction onClick={async () => {
-            await signout();
-            router.push('/signin');
-          }}>Yes</AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            className="bg-gray-400 text-red-600 hover:bg-gray-300"
+            onClick={async () => {
+              setMessage([], undefined);
+              await signout();
+            }}
+          >
+            Log Out
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

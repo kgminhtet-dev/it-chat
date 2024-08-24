@@ -25,7 +25,7 @@ describe('AccountRepoService', () => {
     console.log(await service.findAll());
   });
 
-  it('shoulg log all accounts by username', async () => {
+  it('should log all accounts by username', async () => {
     console.log(await service.findAll(['kgkg', 'kgminhtet']));
   });
 
