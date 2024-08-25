@@ -1,15 +1,15 @@
 import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  UnauthorizedException,
+    BadRequestException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+    UnauthorizedException,
 } from '@nestjs/common';
-import { AccountRepoService } from '../repository/Account/account-repo.service';
-import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { IChangePassword } from '../repository/Account/dto/change-password';
 import { FriendRequestRepoService } from '../repository/FriendRequest/friendRequest-repo.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserProfileService {

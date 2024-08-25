@@ -1,23 +1,25 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import SearchListItem from '@/components/app-ui/search-list-item';
-import { SearchIcon } from 'lucide-react';
-import { alreadyChats, searchChatByName, searchUsername } from '@/lib/actions';
-import useAppStore from '@/components/hooks/use-app-store';
-import { IAccount } from '@/lib/types/IAccount';
-import { useToast } from '@/components/ui/use-toast';
+import SearchListItem from "@/components/app-ui/search-list-item";
+import useAppStore from "@/components/hooks/use-app-store";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
+import { alreadyChats, searchChatByName, searchUsername } from "@/lib/actions";
+import { IAccount } from "@/lib/types/IAccount";
+import { SearchIcon } from "lucide-react";
+import { useState } from "react";
 
 export default function SearchBar() {
   const { toast } = useToast();
   const chats = useAppStore((state) => state.chats);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<{
-    account: IAccount;
-    chatId?: string;
-  }[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<
+    {
+      account: IAccount;
+      chatId?: string;
+    }[]
+  >([]);
 
   return (
     <>
@@ -30,34 +32,38 @@ export default function SearchBar() {
             setSearchTerm(e.target.value);
           }}
           onKeyDown={async (e) => {
-            if (e.key === 'Enter' && searchTerm.length > 0) {
+            if (e.key === "Enter" && searchTerm.length > 0) {
               const name = searchTerm.toLowerCase();
-              if (name[0] === '@') {
+              if (name[0] === "@") {
                 const chat = await alreadyChats(chats, name);
                 if (chat) {
-                  setSearchResults([{
-                    account: chat.contact,
-                    chatId: chat.id,
-                  }]);
+                  setSearchResults([
+                    {
+                      account: chat.contact,
+                      chatId: chat.id,
+                    },
+                  ]);
                   return;
                 }
                 const username = await searchUsername(name);
                 if (username.error) {
                   toast({
-                    variant: 'destructive',
+                    variant: "destructive",
                     title: username.error,
                   });
                   setSearchResults([]);
                   return;
                 }
-                if (username)
-                  setSearchResults([{ account: username }]);
+                if (username) setSearchResults([{ account: username }]);
                 return;
               }
               const foundChats = await searchChatByName(chats, name);
               if (foundChats)
-                setSearchResults(foundChats.map(
-                  (chat) => ({ account: chat.contact, chatId: chat.id })),
+                setSearchResults(
+                  foundChats.map((chat) => ({
+                    account: chat.contact,
+                    chatId: chat.id,
+                  })),
                 );
               return;
             }
@@ -68,13 +74,15 @@ export default function SearchBar() {
         <SearchIcon className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
       </div>
       {searchTerm.length > 0 && (
-        <div
-          className="m-1 z-50 absolute w-1/4 h-max top-11 rounded-md border-2 border-blue-400 bg-background shadow-sm">
+        <div className="m-1 z-50 absolute w-1/4 h-max top-11 rounded-md border bg-background shadow-sm">
           {searchResults.length > 0 ? (
             <ScrollArea>
               <ul className="max-h-[300px]">
                 {searchResults.map((result, index) => (
-                  <li key={index} className="cursor-pointer px-2 py-2 hover:bg-muted">
+                  <li
+                    key={index}
+                    className="cursor-pointer px-2 py-2 border-b hover:bg-muted"
+                  >
                     <SearchListItem
                       foundUser={result.account}
                       chatId={result.chatId}
@@ -85,7 +93,9 @@ export default function SearchBar() {
               </ul>
             </ScrollArea>
           ) : (
-            <div className="px-4 py-2 text-muted-foreground">No results found.</div>
+            <div className="px-4 py-2 text-muted-foreground">
+              No results found.
+            </div>
           )}
         </div>
       )}

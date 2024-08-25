@@ -1,4 +1,4 @@
 export interface ChatIdEventDto {
-  sender: string;
+  senderId: string;
   participants: string[];
 }

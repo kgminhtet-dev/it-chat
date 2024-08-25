@@ -10,7 +10,7 @@ export interface ProfileSlice {
 const createProfileSlice: StateCreator<ProfileSlice> = (set) => ({
   profile: undefined,
 
-  setProfile: (profile: IProfile) => set({ profile }),
+  setProfile: (profile: IProfile | undefined) => set({ profile }),
 });
 
 export default createProfileSlice;

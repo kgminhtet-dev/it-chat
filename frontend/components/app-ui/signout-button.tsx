@@ -17,7 +17,9 @@ import { LogOut } from "lucide-react";
 import useAppStore from "../hooks/use-app-store";
 
 export default function SignoutButton() {
+  const setToken = useAppStore((state) => state.setToken);
   const setMessage = useAppStore((state) => state.setMessages);
+  const setProfile = useAppStore((state) => state.setProfile);
 
   return (
     <AlertDialog>
@@ -43,6 +45,8 @@ export default function SignoutButton() {
             className="bg-gray-400 text-red-600 hover:bg-gray-300"
             onClick={async () => {
               setMessage([], undefined);
+              setProfile(undefined);
+              setToken(undefined);
               await signout();
             }}
           >

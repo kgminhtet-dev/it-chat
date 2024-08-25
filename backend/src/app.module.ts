@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import * as path from 'node:path';
+import { AppWsGateway } from './app-ws.gateway';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RepositoryModule } from './services/repository/repository.module';
 import { AuthModule } from './services/auth/auth.module';
-import { UserProfileModule } from './services/user-profile/user-profile.module';
+import { ChatModule } from './services/chat/chat.module';
 import { FriendModule } from './services/friend/friend.module';
 import { NotificationModule } from './services/notification/notification.module';
-import { ConfigModule } from '@nestjs/config';
-import { ChatModule } from './services/chat/chat.module';
-import * as path from 'node:path';
-import { JwtModule } from '@nestjs/jwt';
+import { RepositoryModule } from './services/repository/repository.module';
+import { UserProfileModule } from './services/user-profile/user-profile.module';
 
 @Module({
   imports: [
@@ -28,6 +29,6 @@ import { JwtModule } from '@nestjs/jwt';
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, AppWsGateway, Map],
 })
 export class AppModule {}

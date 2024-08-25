@@ -75,7 +75,7 @@ export default function UserProfilePage({
                         setMessages(messages, chat);
                       } else {
                         getChat(socket, {
-                          sender: profile.username,
+                          senderId: profile.id,
                           participants: [profile.username, friend?.username],
                         });
                       }

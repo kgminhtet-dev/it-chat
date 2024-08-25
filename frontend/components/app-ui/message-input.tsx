@@ -42,7 +42,7 @@ export default function MessageInput() {
           }
         }}
         placeholder="Type your message..."
-        className="flex-1 rounded-2xl px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+        className="flex-1 border-blue-500 rounded-2xl px-4 py-2 bg-white"
         autoFocus
       />
       {/* <Button variant="ghost" size="icon" className="rounded-full">

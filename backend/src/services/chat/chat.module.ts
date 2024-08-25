@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ChatService } from './chat.service';
-import { ChatController } from './chat.controller';
 import { RepositoryModule } from '../repository/repository.module';
-import { ChatWsGateway } from './chat-ws.gateway';
-import { ChatWsGatewayService } from './chat-ws.gateway.service';
-import { AuthModule } from '../auth/auth.module';
+import { ChatController } from './chat.controller';
+import { ChatService } from './chat.service';
 
 @Module({
-  imports: [RepositoryModule, AuthModule],
+  imports: [RepositoryModule],
   exports: [ChatService],
   controllers: [ChatController],
-  providers: [Map, ChatService, ChatWsGateway, ChatWsGatewayService],
+  providers: [ChatService],
 })
 export class ChatModule {}
