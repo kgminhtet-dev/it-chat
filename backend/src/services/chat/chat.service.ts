@@ -9,7 +9,7 @@ import { MessageRepoService } from '../repository/Message/message-repo.service';
 export class ChatService {
   constructor(
     private readonly accountRepoService: AccountRepoService,
-    private readonly chatRepoSerivce: ChatRepoService,
+    private readonly chatRepoService: ChatRepoService,
     private readonly messageRepoService: MessageRepoService,
   ) {}
 
@@ -54,11 +54,55 @@ export class ChatService {
   }
 
   async getChatIdsOf(accountId: string) {
-    return this.chatRepoSerivce.findIdsByAccountId(accountId);
+    return this.chatRepoService.findIdsByAccountId(accountId);
+  }
+
+  async getChatOf(accountId: string, chatId: string) {
+    const chat = await this.chatRepoService.findById(chatId);
+    const participants = chat.accounts.map((accont) => ({
+      id: accont.id,
+      fullname: accont.fullname,
+      username: accont.username,
+    }));
+    const contact = participants.filter(
+      (participant) => participant.id !== accountId,
+    )[0];
+    return {
+      id: chat.id,
+      name: chat.name,
+      participants,
+      contact,
+      lastMessage: chat.lastMessage,
+      lastChatTime: chat.lastChatTime,
+    };
+  }
+
+  async getChatsOf(accountId: string) {
+    const account = await this.accountRepoService.findById(accountId, {
+      chats: true,
+    });
+    return account.chats.map((chat) => {
+      const contact = chat.accounts.filter(
+        (member) => accountId != member.id,
+      )[0];
+      return {
+        id: chat.id,
+        name: chat.name,
+        lastMessage: chat.lastMessage,
+        lastChatTime: chat.lastChatTime,
+        contact: {
+          id: contact.id,
+          username: '@' + contact.username,
+          fullname: contact.fullname,
+          isDeactivated: contact.isDeactivated,
+        },
+        createdAt: chat.createdAt,
+        updatedAt: chat.updatedAt,
+      };
+    });
   }
 
   async createChat(chatId: string, participants: string[]) {
-    const chat = await this.chatRepoSerivce.create(chatId, participants);
-    return chat;
+    return this.chatRepoService.create(chatId, participants);
   }
 }

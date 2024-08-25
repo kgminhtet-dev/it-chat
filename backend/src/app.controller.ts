@@ -9,7 +9,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -61,6 +60,21 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('accounts/:accountId/chats')
+  async getChats(@Req() request: Request & { payload: IPayload }) {
+    return this.chatService.getChatsOf(request.payload.sub);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('accounts/:accountId/chats/:chatId')
+  async getChat(
+    @Req() request: Request & { payload: IPayload },
+    @Param('chatId') chatId: string,
+  ) {
+    return this.chatService.getChatOf(request.payload.sub, chatId);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('accounts/:accountId/chats/:chatId/messages')
   async getMessages(
     @Req() request: Request & { payload: IPayload },
@@ -70,21 +84,9 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('accounts')
-  async getAccount(
-    @Req() request: Request & { payload: IPayload },
-    @Query('kind') kind: string,
-    @Query('username') username: string,
-  ) {
-    if (kind === 'profile')
-      return this.userService.getAccountById(request.payload.sub);
-    if (username) return this.userService.getProfile(username);
-  }
-
-  @UseGuards(AuthGuard)
   @Get('accounts/:accountId')
-  async getAccountById(@Param('accountId') accountId: string) {
-    return this.userService.getProfileById(accountId);
+  async getAccountById(@Req() request: Request & { payload: IPayload }) {
+    return this.userService.getAccountById(request.payload.sub);
   }
 
   @UseGuards(AuthGuard)

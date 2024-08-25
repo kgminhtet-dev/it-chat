@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import useAppStore from "@/components/hooks/use-app-store";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import useAppStore from '@/components/hooks/use-app-store';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Sheet,
   SheetContent,
@@ -12,18 +12,18 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/use-toast";
-import { changePassword } from "@/lib/actions";
-import { IProfile } from "@/lib/types/IProfile";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+} from '@/components/ui/sheet';
+import { useToast } from '@/components/ui/use-toast';
+import { changePassword } from '@/lib/actions';
+import { IProfile } from '@/lib/types/IProfile';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
 const passwordSchema = z.object({
-  currentPassword: z.string().min(8, "Password must be at least 8 characters"),
-  newPassword: z.string().min(8, "Password must be at least 8 characters"),
-  reNewPassword: z.string().min(8, "Password must be at least 8 characters"),
+  currentPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  reNewPassword: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 export default function PasswordButton() {
@@ -41,26 +41,26 @@ export default function PasswordButton() {
   const onSubmit = async (formdata: any) => {
     if (formdata.newPassword !== formdata.reNewPassword) {
       toast({
-        variant: "destructive",
-        title: "New password and re-type new password are not match.",
+        variant: 'destructive',
+        title: 'New password and re-type new password are not match.',
       });
       return;
     }
     const data = await changePassword(profile.id, formdata);
     reset({
-      currentPassword: "",
-      newPassword: "",
-      reNewPassword: "",
+      currentPassword: '',
+      newPassword: '',
+      reNewPassword: '',
     });
     if (data.error) {
       toast({
-        variant: "destructive",
+        variant: 'destructive',
         title: data.error,
       });
       return;
     }
     toast({
-      variant: "default",
+      variant: 'default',
       title: data.message,
     });
   };
@@ -70,12 +70,12 @@ export default function PasswordButton() {
       <SheetTrigger asChild>
         <Button
           variant="default"
-          className={"w-max bg-green-600 hover:bg-green-500 self-end"}
+          className={'w-max bg-green-600 hover:bg-white hover:text-green-500'}
         >
           Change Password
         </Button>
       </SheetTrigger>
-      <SheetContent side={"top"}>
+      <SheetContent side={'top'}>
         <SheetHeader>
           <SheetTitle>Change Password</SheetTitle>
           <SheetDescription>
@@ -88,12 +88,12 @@ export default function PasswordButton() {
               <Label htmlFor="currentPassword" className="text-right">
                 Current Password
               </Label>
-              <div className={"col-span-3"}>
+              <div className={'col-span-3'}>
                 <Input
                   id="currentPassword"
-                  type={"password"}
+                  type={'password'}
                   className="border-gray-500"
-                  {...register("currentPassword")}
+                  {...register('currentPassword')}
                 />
                 <div className="h-4">
                   {errors.currentPassword && (
@@ -108,12 +108,12 @@ export default function PasswordButton() {
               <Label htmlFor="newPassword" className="text-right">
                 New Password
               </Label>
-              <div className={"col-span-3"}>
+              <div className={'col-span-3'}>
                 <Input
                   id="newPassword"
-                  type={"password"}
+                  type={'password'}
                   className="border-gray-500"
-                  {...register("newPassword")}
+                  {...register('newPassword')}
                 />
                 <div className="h-4">
                   {errors.newPassword && (
@@ -128,12 +128,12 @@ export default function PasswordButton() {
               <Label htmlFor="reNewPassword" className="text-right">
                 Re-type new Password
               </Label>
-              <div className={"col-span-3"}>
+              <div className={'col-span-3'}>
                 <Input
                   id="reNewPassword"
-                  type={"password"}
+                  type={'password'}
                   className="border-gray-500"
-                  {...register("reNewPassword")}
+                  {...register('reNewPassword')}
                 />
                 <div className="h-2">
                   {errors.reNewPassword && (

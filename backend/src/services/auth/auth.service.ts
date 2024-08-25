@@ -43,20 +43,13 @@ export class AuthService {
     });
     const payload = { sub: account.id, username: account.username };
     return {
-      profile: {
-        id: account.id,
-        fullname: account.fullname,
-        username: '@' + account.username,
-        email: account.email,
-      },
-      chats: [],
+      account_id: account.id,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
   async signin(email: string, password: string) {
     const account = await this.accountRepoService.findByEmail(email, true);
-
     if (!account) {
       throw new UnauthorizedException(`Incorrect email.`);
     }
@@ -70,13 +63,7 @@ export class AuthService {
 
     const payload = { sub: account.id, username: account.username };
     return {
-      profile: {
-        id: account.id,
-        fullname: account.fullname,
-        username: '@' + account.username,
-        email: account.email,
-      },
-      chats: this.toRespChats(account, account.chats),
+      account_id: account.id,
       access_token: await this.jwtService.signAsync(payload),
     };
   }

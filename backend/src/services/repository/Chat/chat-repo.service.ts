@@ -15,6 +15,9 @@ export class ChatRepoService {
   async findById(id: string) {
     return this.chatRepository.findOne({
       where: { id },
+      relations: {
+        accounts: true,
+      },
     });
   }
 
@@ -42,10 +45,6 @@ export class ChatRepoService {
     });
 
     return this.chatRepository.save(newChat);
-  }
-
-  async save(chat: Chat) {
-    return this.chatRepository.save(chat);
   }
 
   async update(id: string, chat: Chat) {

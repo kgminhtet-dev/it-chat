@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import SearchListItem from "@/components/app-ui/search-list-item";
-import useAppStore from "@/components/hooks/use-app-store";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/components/ui/use-toast";
-import { alreadyChats, searchChatByName, searchUsername } from "@/lib/actions";
-import { IAccount } from "@/lib/types/IAccount";
-import { SearchIcon } from "lucide-react";
-import { useState } from "react";
+import SearchListItem from '@/components/app-ui/search-list-item';
+import useAppStore from '@/components/hooks/use-app-store';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/components/ui/use-toast';
+import { alreadyChats, searchChatByName, searchUsername } from '@/lib/actions';
+import { IAccount } from '@/lib/types/IAccount';
+import { SearchIcon } from 'lucide-react';
+import { useState } from 'react';
 
 export default function SearchBar() {
   const { toast } = useToast();
   const chats = useAppStore((state) => state.chats);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<
     {
       account: IAccount;
@@ -23,7 +23,7 @@ export default function SearchBar() {
 
   return (
     <>
-      <div className="relative flex items-center rounded-md bg-background px-4 py-2 shadow-sm">
+      <div className="relative row-span-1 flex items-center rounded-md bg-background px-4 py-2 shadow-sm">
         <Input
           type="search"
           placeholder="Search chats or start conversation..."
@@ -32,9 +32,9 @@ export default function SearchBar() {
             setSearchTerm(e.target.value);
           }}
           onKeyDown={async (e) => {
-            if (e.key === "Enter" && searchTerm.length > 0) {
+            if (e.key === 'Enter' && searchTerm.length > 0) {
               const name = searchTerm.toLowerCase();
-              if (name[0] === "@") {
+              if (name[0] === '@') {
                 const chat = await alreadyChats(chats, name);
                 if (chat) {
                   setSearchResults([
@@ -48,7 +48,7 @@ export default function SearchBar() {
                 const username = await searchUsername(name);
                 if (username.error) {
                   toast({
-                    variant: "destructive",
+                    variant: 'destructive',
                     title: username.error,
                   });
                   setSearchResults([]);

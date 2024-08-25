@@ -1,9 +1,9 @@
 import {
-    BadRequestException,
-    Injectable,
-    InternalServerErrorException,
-    NotFoundException,
-    UnauthorizedException,
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
@@ -45,7 +45,7 @@ export class UserProfileService {
     };
   }
 
-  async getProfileById(id: string) {
+  async getAccountById(id: string) {
     const account = await this.accountRepoService.findById(id);
     if (!account) {
       throw new NotFoundException(`User not found.`);
@@ -59,45 +59,7 @@ export class UserProfileService {
       id: account.id,
       fullname: account.fullname,
       username: '@' + account.username,
-    };
-  }
-
-  async getAccountById(id: string) {
-    const account = await this.accountRepoService.findById(id, { chats: true });
-    if (!account) {
-      throw new NotFoundException(`User not found.`);
-    }
-
-    const chats = account.chats.map((chat) => {
-      const contact = chat.accounts.filter(
-        (member) => account.username != member.username,
-      )[0];
-      return {
-        id: chat.id,
-        name: chat.name,
-        lastMessage: chat.lastMessage,
-        lastChatTime: chat.lastChatTime,
-        contact: {
-          id: contact.id,
-          username: '@' + contact.username,
-          fullname: contact.fullname,
-          isDeactivated: contact.isDeactivated,
-        },
-        createdAt: chat.createdAt,
-        updatedAt: chat.updatedAt,
-      };
-    });
-
-    return {
-      profile: {
-        id: account.id,
-        fullname: account.fullname,
-        username: '@' + account.username,
-        email: account.email,
-      },
-      chats,
-      createdAt: account.createdAt,
-      updatedAt: account.updatedAt,
+      email: account.email,
     };
   }
 

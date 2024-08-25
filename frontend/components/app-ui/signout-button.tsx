@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   AlertDialog,
@@ -10,26 +10,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { signout } from "@/lib/actions";
-import { LogOut } from "lucide-react";
-import useAppStore from "../hooks/use-app-store";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { signout } from '@/lib/actions';
 
 export default function SignoutButton() {
-  const setToken = useAppStore((state) => state.setToken);
-  const setMessage = useAppStore((state) => state.setMessages);
-  const setProfile = useAppStore((state) => state.setProfile);
-
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          size="icon"
-          variant="destructive"
-          className="m-1 absolute self-end"
+          variant="outline"
+          className="w-max text-red-600 hover:bg-red-500 hover:text-white"
         >
-          <LogOut />
+          Log Out
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -44,9 +37,6 @@ export default function SignoutButton() {
           <AlertDialogAction
             className="bg-gray-400 text-red-600 hover:bg-gray-300"
             onClick={async () => {
-              setMessage([], undefined);
-              setProfile(undefined);
-              setToken(undefined);
               await signout();
             }}
           >

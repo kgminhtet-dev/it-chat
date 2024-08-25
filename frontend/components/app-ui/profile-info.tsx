@@ -1,34 +1,29 @@
-import DeactivateButton from "@/components/app-ui/deactivate-button";
-import PasswordButton from "@/components/app-ui/password-button";
-import PersonalInto from "@/components/app-ui/personal-info";
-import { Separator } from "@/components/ui/separator";
-import { updateAccount } from "@/lib/actions";
-import { IProfile } from "@/lib/types/IProfile";
+import PersonalInto from '@/components/app-ui/personal-info';
+import { updateAccount } from '@/lib/actions';
+import { IProfile } from '@/lib/types/IProfile';
 
 interface Props {
-  profile: IProfile;
+  account: IProfile;
 }
 
-export default function ProfileInfo({ profile }: Props) {
+export default function ProfileInfo({ account }: Props) {
   return (
-    <div className="flex-1 flex flex-col gap-2">
+    <div className="row-span-5">
       <PersonalInto
-        type={"Fullname"}
-        info={profile.fullname}
+        type={'Fullname'}
+        info={account.fullname}
         fn={updateAccount}
       />
-      <PersonalInto type={"Email"} info={profile.email} fn={updateAccount} />
       <PersonalInto
-        type={"Username"}
-        info={profile.username}
+        type={'Email'}
+        info={account.email}
         fn={updateAccount}
       />
-      <Separator />
-      <div className={"flex flex-1 flex-col justify-start gap-1 p-1"}>
-        <PasswordButton />
-        <Separator />
-        <DeactivateButton />
-      </div>
+      <PersonalInto
+        type={'Username'}
+        info={account.username}
+        fn={updateAccount}
+      />
     </div>
   );
 }

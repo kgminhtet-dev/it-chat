@@ -1,7 +1,7 @@
-"use cilent";
+'use client';
 
-import useAppStore from "@/components/hooks/use-app-store";
-import { Button } from "@/components/ui/button";
+import useAppStore from '@/components/hooks/use-app-store';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,14 +10,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/components/ui/use-toast';
+import { useState } from 'react';
 
 interface PersonalInfo {
-  type: "Fullname" | "Email" | "Username";
+  type: 'Fullname' | 'Email' | 'Username';
   info: string;
   fn?: any;
 }
@@ -29,11 +29,11 @@ export default function PersonalInto({ type, info, fn }: PersonalInfo) {
   const setProfile = useAppStore((state) => state.setProfile);
 
   return (
-    <div className={"relative h-max flex flex-col p-1"}>
+    <div className={'relative h-max flex flex-col p-1'}>
       <h4 className="font-medium tracking-tight border-b-2">{type}</h4>
       <div
         className={
-          "w-full border-b flex justify-between items-center pl-2 rounded-md shadow-sm"
+          'w-full border-b flex justify-between items-center pl-2 rounded-md shadow-sm'
         }
       >
         <p className="text-base">{info}</p>
@@ -66,27 +66,27 @@ export default function PersonalInto({ type, info, fn }: PersonalInfo) {
               <Button
                 onClick={async () => {
                   const newInfo = userInfo.trim();
-                  if (type === "Fullname" && profile?.fullname === newInfo) {
+                  if (type === 'Fullname' && profile?.fullname === newInfo) {
                     toast({
-                      variant: "destructive",
+                      variant: 'destructive',
                       title:
-                        "Can't change because name you changed is matched with current name.",
+                        'Can\'t change because name you changed is matched with current name.',
                     });
                     return;
                   }
-                  if (type === "Email" && profile?.email === newInfo) {
+                  if (type === 'Email' && profile?.email === newInfo) {
                     toast({
-                      variant: "destructive",
+                      variant: 'destructive',
                       title:
-                        "Can't change because email you changed is matched with current email.",
+                        'Can\'t change because email you changed is matched with current email.',
                     });
                     return;
                   }
-                  if (type === "Username" && profile?.username === newInfo) {
+                  if (type === 'Username' && profile?.username === newInfo) {
                     toast({
-                      variant: "destructive",
+                      variant: 'destructive',
                       title:
-                        "Can't change because username you changed is matched with current username.",
+                        'Can\'t change because username you changed is matched with current username.',
                     });
                     return;
                   }
@@ -97,19 +97,19 @@ export default function PersonalInto({ type, info, fn }: PersonalInfo) {
                         title: data.message,
                       });
                       switch (type) {
-                        case "Fullname":
+                        case 'Fullname':
                           setProfile({ ...profile, fullname: newInfo });
                           break;
-                        case "Email":
+                        case 'Email':
                           setProfile({ ...profile, email: newInfo });
                           break;
-                        case "Username":
+                        case 'Username':
                           setProfile({ ...profile, username: newInfo });
                           break;
                       }
                     } else {
                       toast({
-                        variant: "destructive",
+                        variant: 'destructive',
                         title: data.error,
                       });
                     }

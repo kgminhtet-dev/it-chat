@@ -1,29 +1,31 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { IProfile } from "@/lib/types/IProfile";
-import { shortName } from "@/lib/utils";
-import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { shortName } from '@/lib/utils';
+import Link from 'next/link';
+import { getAccount } from '@/lib/actions';
 
 interface Props {
-  profile: IProfile;
+  accountId: string;
 }
 
-export default function ProfileBar({ profile }: Props) {
+export default async function ProfileBar({ accountId }: Props) {
+  const account = await getAccount(accountId);
+
   return (
-    <div className={"row-span-1 flex justify-between items-center pl-2 pr-2"}>
+    <div className={'row-span-1 flex justify-between items-center pl-2 pr-2'}>
       <Link
-        href={`/chat/${profile.id}/friends/add-friends`}
+        href={`/${account.id}/friends/add-friends`}
         className={
-          "p-1 pr-3 pl-3 text-sm text-primary-foreground bg-blue-500 rounded border" +
-          " border-gray-300"
+          'p-1 pr-3 pl-3 text-sm text-primary-foreground bg-blue-500 rounded border' +
+          ' border-gray-300'
         }
       >
         Add Friend
       </Link>
-      <Link href={"/chat/profile"} className={"rounded-full shadow-md"}>
+      <Link href={`/${account.id}/profile`} className={'rounded-full shadow-md'}>
         <Avatar>
           <AvatarImage src="" />
-          <AvatarFallback className={"bg-green-600 text-white font-bold"}>
-            {shortName(profile.fullname)}
+          <AvatarFallback className={'bg-green-600 text-white font-bold'}>
+            {shortName(account.fullname)}
           </AvatarFallback>
         </Avatar>
       </Link>
