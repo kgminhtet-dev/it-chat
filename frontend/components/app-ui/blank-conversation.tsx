@@ -1,8 +1,8 @@
 export default function BlankConversation() {
   return (
-    <div className={"row-span-12 flex justify-center items-center"}>
+    <div className={'row-span-12 flex justify-center items-center'}>
       <p
-        className={"border border-gray-500 rounded-full p-1 pr-5 pl-5 text-sm"}
+        className={'bg-gray-200 border border-gray-400 rounded-full p-1 pr-5 pl-5 text-sm text-muted-foreground'}
       >
         Select a chat to start messaging
       </p>

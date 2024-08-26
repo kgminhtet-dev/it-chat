@@ -1,30 +1,38 @@
-import ConversationBar from '@/components/app-ui/conversation-bar';
-import { getAccount, getChat, getMessages } from '@/lib/actions';
-import { IChat } from '@/lib/types/IChat';
-import { IProfile } from '@/lib/types/IProfile';
-import MessageList from '@/components/app-ui/message-list';
+'use client';
 
-export default async function ConversationPage(
+import ConversationBar from '@/components/app-ui/conversation-bar';
+import MessageList from '@/components/app-ui/message-list';
+import MessageInput from '@/components/app-ui/message-input';
+import { getChat } from '@/lib/actions';
+import useAppStore from '@/components/hooks/use-app-store';
+import FetchProfile from '@/components/app-ui/fetch-profile';
+import { useEffect, useState } from 'react';
+import { IChat } from '@/lib/types/IChat';
+
+export default function ConversationPage(
   { params }: { params: { accountId: string, chatId: string } },
 ) {
-  const account: IProfile = await getAccount(params.accountId);
-  const chat: IChat = await getChat(params.accountId, params.chatId);
-  const messages = await getMessages(account.id, chat.id);
+  const [chat, setChat] = useState<IChat | undefined>(undefined);
+  const account = useAppStore((state) => state.profile);
+  const setAccount = useAppStore((state) => state.setProfile);
 
-  return (
-    <div className="row-span-11">
-      <div className={'h-full flex flex-col'}>
-        <div className={'h-12'}>
-          <ConversationBar chat={chat} />
-        </div>
-        <div className={'flex-1 overflow-auto'}>
-          <MessageList
-            account={account}
-            chat={chat}
-            messages={messages}
-          />
-        </div>
+  useEffect(() => {
+    getChat(params.accountId, params.chatId)
+      .then((chat) => setChat(chat))
+      .catch((error) => console.error(error));
+  }, []);
+
+  if (!account) return <FetchProfile accountId={params.accountId} />;
+
+  return chat && (
+    <div className="h-full row-span-12 flex flex-col">
+      <div className={'h-12'}>
+        <ConversationBar chat={chat} />
       </div>
+      <div className={'flex-1 overflow-auto'}>
+        <MessageList chat={chat} />
+      </div>
+      <MessageInput chat={chat} />
     </div>
   );
 }

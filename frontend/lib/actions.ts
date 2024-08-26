@@ -156,13 +156,13 @@ export async function updateAccount(
   let requestData;
   const url = process.env.URL;
   switch (type) {
-    case 'Fullname':
+    case 'fullname':
       requestData = JSON.stringify({ fullname: accountInfo });
       break;
-    case 'Email':
+    case 'email':
       requestData = JSON.stringify({ email: accountInfo });
       break;
-    case 'Username':
+    case 'username':
       requestData = JSON.stringify({ username: accountInfo });
       break;
   }
@@ -178,6 +178,7 @@ export async function updateAccount(
 
   const data = await response.json();
   if (response.status === StatusCodes.OK) {
+    revalidatePath(`${accountId}/profile`);
     return { message: data.message };
   }
   return { error: data.message };
@@ -205,6 +206,7 @@ export async function deactivateAccount(accountId: string) {
 
 export async function signout() {
   cookies().delete('access_token');
+  cookies().delete('account_id');
   redirect('/signin');
 }
 
@@ -438,6 +440,7 @@ export async function getChats(accountId: string) {
   );
 
   const data = await response.json();
+  console.log('chats ', data);
   if (response.status === StatusCodes.OK) {
     return data;
   }
@@ -463,4 +466,8 @@ export async function getChat(accountId: string, chatId: string) {
     return data;
   }
   return { error: data.message };
+}
+
+export async function getChatId(sender: string, receiver: string) {
+
 }

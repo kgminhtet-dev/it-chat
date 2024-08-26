@@ -1,7 +1,6 @@
 'use client';
 
 import SearchListItem from '@/components/app-ui/search-list-item';
-import useAppStore from '@/components/hooks/use-app-store';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/components/ui/use-toast';
@@ -9,10 +8,13 @@ import { alreadyChats, searchChatByName, searchUsername } from '@/lib/actions';
 import { IAccount } from '@/lib/types/IAccount';
 import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
+import useAppStore from '@/components/hooks/use-app-store';
+import { IProfile } from '@/lib/types/IProfile';
 
-export default function SearchBar() {
+export default function SearchBar(): JSX.Element {
   const { toast } = useToast();
   const chats = useAppStore((state) => state.chats);
+  const account = useAppStore((state) => state.profile) as IProfile;
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<
     {
@@ -77,13 +79,14 @@ export default function SearchBar() {
         <div className="m-1 z-50 absolute w-1/4 h-max top-11 rounded-md border bg-background shadow-sm">
           {searchResults.length > 0 ? (
             <ScrollArea>
-              <ul className="max-h-[300px]">
+              <ul className="max-h-[300px] rounded shadow-md border p-1">
                 {searchResults.map((result, index) => (
                   <li
                     key={index}
                     className="cursor-pointer px-2 py-2 border-b hover:bg-muted"
                   >
                     <SearchListItem
+                      account={account}
                       foundUser={result.account}
                       chatId={result.chatId}
                       clearSearchTerm={setSearchTerm}

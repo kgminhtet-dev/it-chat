@@ -1,32 +1,27 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getProfile } from '@/lib/actions';
+import { getAccount } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
-import { Skeleton } from '@/components/ui/skeleton';
 import useAppStore from '@/components/hooks/use-app-store';
 
-export default function FetchProfile() {
+interface Props {
+  accountId: string;
+}
+
+export default function FetchProfile({ accountId }: Props): JSX.Element {
   const router = useRouter();
   const setProfile = useAppStore((state) => state.setProfile);
   const setChats = useAppStore((state) => state.setChats);
 
   useEffect(() => {
-    getProfile()
+    getAccount(accountId)
       .then((data) => {
-        if (!data.error) {
-          setProfile(data.profile);
-          setChats(data.chats);
-        } else {
-          router.push('/signin');
-        }
+        setProfile(data.account);
+        setChats(data.chats);
       })
       .catch((error) => console.error(error));
-  }, [setProfile, setChats, router]);
+  }, [setProfile, accountId, router, setChats]);
 
-  return (
-    <main className={'w-screen h-screen flex justify-center items-center'}>
-      <Skeleton />
-    </main>
-  );
+  return <div className={'hidden'} />;
 }

@@ -1,15 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { shortName } from '@/lib/utils';
 import Link from 'next/link';
-import { getAccount } from '@/lib/actions';
+import { IProfile } from '@/lib/types/IProfile';
 
 interface Props {
-  accountId: string;
+  account: IProfile;
 }
 
-export default async function ProfileBar({ accountId }: Props) {
-  const account = await getAccount(accountId);
-
+export default function ProfileBar({ account }: Props) {
   return (
     <div className={'row-span-1 flex justify-between items-center pl-2 pr-2'}>
       <Link

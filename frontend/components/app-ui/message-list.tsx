@@ -1,36 +1,38 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import SentMessage from '@/components/app-ui/send-message';
 import ReceiveMessage from '@/components/app-ui/receive-message';
-import { IMessage } from '@/lib/types/IMessage';
-import { IProfile } from '@/lib/types/IProfile';
 import { IChat } from '@/lib/types/IChat';
 import useAppStore from '@/components/hooks/use-app-store';
+import { useEffect } from 'react';
+import { getMessages } from '@/lib/actions';
 
 interface Props {
-  messages: IMessage[];
-  account: IProfile;
   chat: IChat;
 }
 
-export default function MessageList({ messages, account, chat }: Props) {
+export default function MessageList({ chat }: Props) {
+  const account = useAppStore((state) => state.profile);
+  const setAccount = useAppStore((state) => state.setProfile);
+  const messages = useAppStore((state) => state.messages);
   const setMessages = useAppStore((state) => state.setMessages);
-  const [scrollRef, inView, entry] = useInView({
-    trackVisibility: true,
-    delay: 500,
-  });
+  // const [scrollRef, inView, entry] = useInView({
+  //   trackVisibility: true,
+  //   delay: 500,
+  // });
+  //
+  // useEffect(() => {
+  //   if (!inView) {
+  //     entry?.target?.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // }, [messages, entry, inView]);
 
   useEffect(() => {
-    if (!inView) {
-      entry?.target?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, entry, inView]);
+    getMessages(account.id, chat.id).then((messages) => setMessages(messages)).catch((e) => console.error(e));
+  }, []);
 
-  setMessages(messages);
-  return (
+  return account && (
     <ScrollArea className={'w-full h-full p-2'}>
       {messages.length > 0 &&
         messages.map((message, index) =>
@@ -49,7 +51,7 @@ export default function MessageList({ messages, account, chat }: Props) {
               />
             )),
         )}
-      <div ref={scrollRef} />
+      {/*<div ref={scrollRef} />*/}
     </ScrollArea>
   );
 }

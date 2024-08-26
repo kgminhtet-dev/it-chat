@@ -63,12 +63,12 @@ export class AppWsGateway {
 
   @SubscribeMessage('chat id')
   async handleGettingChatId(
-    @MessageBody() { senderId, participants }: ChatIdEventDto,
+    @MessageBody() { senderId, receiverId }: ChatIdEventDto,
   ) {
     const chatId = this.appService.generateUUID4();
-    const accounts = await this.chatService.getAccounts(participants);
+    const accounts = await this.chatService.getAccounts([senderId, receiverId]);
     const senderConn = this.connList.get(senderId);
-    if (senderConn === undefined) {
+    if (!senderConn) {
       this.server.emit('error', { message: 'Invalid socket.' });
       return;
     }

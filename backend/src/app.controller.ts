@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -62,6 +63,7 @@ export class AppController {
   @UseGuards(AuthGuard)
   @Get('accounts/:accountId/chats')
   async getChats(@Req() request: Request & { payload: IPayload }) {
+    console.log('id ', request.payload);
     return this.chatService.getChatsOf(request.payload.sub);
   }
 
@@ -81,6 +83,14 @@ export class AppController {
     @Param('chatId') chatId: string,
   ) {
     return this.chatService.getMessages(chatId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('accounts')
+  async searchUsername(@Query('username') username: string) {
+    if (username) {
+      return this.userService.search(username);
+    }
   }
 
   @UseGuards(AuthGuard)

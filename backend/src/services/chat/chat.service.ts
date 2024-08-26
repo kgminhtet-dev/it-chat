@@ -28,9 +28,8 @@ export class ChatService {
     );
   }
 
-  async getAccounts(usernames: string[]) {
-    usernames = usernames.map((username) => username.slice(1));
-    const accounts = await this.accountRepoService.findAll(usernames);
+  async getAccounts(ids: string[]) {
+    const accounts = await this.accountRepoService.findAll(ids);
     return accounts.map((account) => ({
       id: account.id,
       fullname: account.fullname,
@@ -58,11 +57,11 @@ export class ChatService {
   }
 
   async getChatOf(accountId: string, chatId: string) {
-    const chat = await this.chatRepoService.findById(chatId);
-    const participants = chat.accounts.map((accont) => ({
-      id: accont.id,
-      fullname: accont.fullname,
-      username: accont.username,
+    const chat = await this.chatRepoService.findById(chatId, true);
+    const participants = chat.accounts.map((account) => ({
+      id: account.id,
+      fullname: account.fullname,
+      username: account.username,
     }));
     const contact = participants.filter(
       (participant) => participant.id !== accountId,
@@ -81,6 +80,7 @@ export class ChatService {
     const account = await this.accountRepoService.findById(accountId, {
       chats: true,
     });
+    console.log('account ', account);
     return account.chats.map((chat) => {
       const contact = chat.accounts.filter(
         (member) => accountId != member.id,

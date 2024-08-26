@@ -1,55 +1,49 @@
-"use client";
+'use client';
 
-import useAppStore from "@/components/hooks/use-app-store";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/components/ui/use-toast";
-import { getMessages, searchChatFormHistory } from "@/lib/actions";
-import { IAccount } from "@/lib/types/IAccount";
-import { IChat } from "@/lib/types/IChat";
-import { IProfile } from "@/lib/types/IProfile";
-import { shortName } from "@/lib/utils";
-import { getChat } from "@/lib/web-socket-actions";
-import { useRouter } from "next/navigation";
-import { Socket } from "socket.io-client";
+import useAppStore from '@/components/hooks/use-app-store';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/components/ui/use-toast';
+import { IAccount } from '@/lib/types/IAccount';
+import { shortName } from '@/lib/utils';
+import { emitChatId } from '@/lib/web-socket-actions';
+import { useRouter } from 'next/navigation';
+import { Socket } from 'socket.io-client';
+import { IProfile } from '@/lib/types/IProfile';
 
 interface Props {
   chatId?: string;
+  account: IProfile;
   foundUser: IAccount;
   clearSearchTerm: any;
 }
 
 export default function SearchListItem({
-  chatId,
-  foundUser,
-  clearSearchTerm,
-}: Props) {
+                                         chatId,
+                                         account,
+                                         foundUser,
+                                         clearSearchTerm,
+                                       }: Props) {
   const { toast } = useToast();
   const router = useRouter();
   const socket = useAppStore((state) => state.socket) as Socket;
-  const profile = useAppStore((state) => state.profile) as IProfile;
-  const setMessages = useAppStore((state) => state.setMessages);
-  const chats = useAppStore((state) => state.chats);
 
   return (
     <div
       onClick={async () => {
-        if (foundUser.username === profile.username)
+        if (foundUser.id === account.id)
           return toast({
-            variant: "default",
-            title: "You can't sent message to yourself.",
+            variant: 'default',
+            title: 'You can\'t sent message to yourself.',
           });
-        if (!chatId) {
-          getChat(socket, {
-            senderId: profile.id,
-            participants: [profile.username, foundUser.username],
-          });
-        } else {
-          const chat = (await searchChatFormHistory(chats, chatId)) as IChat;
-          const messages = await getMessages(profile.id, chatId);
-          setMessages(messages, chat);
+        if (chatId) {
+          clearSearchTerm('');
+          router.push(`/${account.id}/chat/${chatId}`);
         }
-        clearSearchTerm("");
-        router.push("/chat");
+        emitChatId(socket, {
+          senderId: account.id,
+          receiverId: foundUser.id,
+        });
+        clearSearchTerm('');
       }}
       className="flex items-center rounded-md gap-4"
     >

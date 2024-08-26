@@ -27,39 +27,53 @@ export class UserProfileService {
     throw new BadRequestException('Invalid data.');
   }
 
-  async getProfile(username: string) {
-    if (username[0] !== '@') {
-      throw new BadRequestException('Username must start with "@"');
-    }
-    const account = await this.accountRepoService.findByUsername(
-      username.slice(1),
-    );
-    if (!account || account.isDeactivated) {
-      throw new NotFoundException(`User not found.`);
-    }
-
-    return {
-      id: account.id,
-      fullname: account.fullname,
-      username: '@' + account.username,
-    };
-  }
-
   async getAccountById(id: string) {
-    const account = await this.accountRepoService.findById(id);
+    const account = await this.accountRepoService.findById(id, { chats: true });
     if (!account) {
       throw new NotFoundException(`User not found.`);
     }
 
-    if (!account || account.isDeactivated) {
-      throw new NotFoundException(`User not found.`);
-    }
+    const chats = account.chats.map((chat) => {
+      const participants = chat.accounts.map((account) => ({
+        id: account.id,
+        fullname: account.fullname,
+        username: account.username,
+      }));
+      const contact = participants.find((participant) => participant.id !== id);
 
+      return {
+        id: chat.id,
+        name: chat.name,
+        contact,
+        participants,
+        lastMessage: chat.lastMessage,
+        lastChatTime: chat.lastChatTime,
+      };
+    });
+
+    return {
+      account: {
+        id: account.id,
+        fullname: account.fullname,
+        username: '@' + account.username,
+        email: account.email,
+      },
+      chats,
+    };
+  }
+
+  async search(username: string) {
+    if (username[0] !== '@')
+      throw new BadRequestException("Username must start with '@'.");
+    const account = await this.accountRepoService.findByUsername(
+      username.slice(1),
+    );
+    if (!account || account.isDeactivated)
+      throw new NotFoundException(`User not found.`);
     return {
       id: account.id,
       fullname: account.fullname,
-      username: '@' + account.username,
-      email: account.email,
+      username: account.username,
     };
   }
 
@@ -132,6 +146,9 @@ export class UserProfileService {
   }
 
   async changeEmail(id: string, email: string) {
+    const alreadyExist = await this.accountRepoService.findByEmail(email);
+    if (alreadyExist) throw new BadRequestException('Email already exists.');
+
     const updateAccount = await this.accountRepoService.update(id, {
       email,
     });

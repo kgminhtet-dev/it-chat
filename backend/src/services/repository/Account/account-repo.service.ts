@@ -13,10 +13,10 @@ export class AccountRepoService {
     private readonly accountRepository: Repository<Account>,
   ) {}
 
-  findAll(usernames?: string[]): Promise<Account[]> {
-    if (!usernames) return this.accountRepository.find();
+  findAll(ids?: string[]): Promise<Account[]> {
+    if (!ids) return this.accountRepository.find();
     return this.accountRepository.find({
-      where: usernames.map((username) => ({ username: username })),
+      where: ids.map((id) => ({ id })),
     });
   }
 

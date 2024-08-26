@@ -14,8 +14,8 @@ export default function Websocket({ token }: Props) {
   const setMessages = useAppStore((state) => state.setMessages);
   const addChat = useAppStore((state) => state.addChat);
   const setChats = useAppStore((state) => state.setChats);
-  const setMessageNoti = useAppStore((state) => state.setMessageNoti);
   const chats = useAppStore((state) => state.chats);
+  const setMessageNoti = useAppStore((state) => state.setMessageNoti);
   const url = `ws://localhost:8080`;
 
   useEffect(() => {

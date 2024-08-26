@@ -12,12 +12,17 @@ export class ChatRepoService {
     private readonly accountRepoService: AccountRepoService,
   ) {}
 
-  async findById(id: string) {
+  async findById(id: string, accountRelation = false) {
+    if (accountRelation) {
+      return this.chatRepository.findOne({
+        where: { id },
+        relations: {
+          accounts: true,
+        },
+      });
+    }
     return this.chatRepository.findOne({
       where: { id },
-      relations: {
-        accounts: true,
-      },
     });
   }
 

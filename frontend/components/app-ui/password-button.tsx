@@ -1,6 +1,5 @@
 'use client';
 
-import useAppStore from '@/components/hooks/use-app-store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,9 +25,12 @@ const passwordSchema = z.object({
   reNewPassword: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
-export default function PasswordButton() {
+interface Props {
+  account: IProfile;
+}
+
+export default function PasswordButton({ account }: Props) {
   const { toast } = useToast();
-  const profile = useAppStore((state) => state.profile) as IProfile;
   const {
     register,
     handleSubmit,
@@ -46,7 +48,7 @@ export default function PasswordButton() {
       });
       return;
     }
-    const data = await changePassword(profile.id, formdata);
+    const data = await changePassword(account.id, formdata);
     reset({
       currentPassword: '',
       newPassword: '',

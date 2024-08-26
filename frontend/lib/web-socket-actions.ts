@@ -6,15 +6,15 @@ interface SendMessageDto {
   content: string;
 }
 
-export function deactivate(socket: Socket) {
+export function emitDeactivate(socket: Socket) {
   socket.emit('deactivate');
 }
 
-export function sendMessage(socket: Socket, data: SendMessageDto) {
+export function emitMessage(socket: Socket, data: SendMessageDto) {
   socket.emit('message', data);
 }
 
-export function getChat(socket: Socket, data: any) {
+export function emitChatId(socket: Socket, data: any) {
   socket.emit('chat id', data);
 }
 
