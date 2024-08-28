@@ -12,12 +12,12 @@ export class ChatRepoService {
     private readonly accountRepoService: AccountRepoService,
   ) {}
 
-  async findById(id: string, accountRelation = false) {
-    if (accountRelation) {
+  async findById(id: string, members = false) {
+    if (members) {
       return this.chatRepository.findOne({
         where: { id },
         relations: {
-          accounts: true,
+          members: true,
         },
       });
     }
@@ -27,17 +27,10 @@ export class ChatRepoService {
   }
 
   async findIdsByAccountId(accountId: string) {
-    const chats = await this.chatRepository.find({
-      select: {
-        id: true,
-      },
-      where: {
-        accounts: {
-          id: accountId,
-        },
-      },
+    const account = await this.accountRepoService.findById(accountId, {
+      chats: true,
     });
-    return chats.map((chat: Chat) => chat.id);
+    return account.chats.map((chat: Chat) => ({ id: chat.id }));
   }
 
   async create(id: string, members: string[], name = '') {
@@ -46,7 +39,7 @@ export class ChatRepoService {
     const newChat = this.chatRepository.create({
       id,
       name,
-      accounts,
+      members: accounts,
     });
 
     return this.chatRepository.save(newChat);

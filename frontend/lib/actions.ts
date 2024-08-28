@@ -6,52 +6,11 @@ import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-export const getAccount = async (accountId: string) => {
-  const token = await getCookie('access_token');
-  const url = process.env.URL;
-  try {
-    const response = await fetch(`${url}/api/accounts/${accountId}`, {
-      headers: {
-        Authorization: `Bearer ${token?.value}`,
-      },
-    });
-    const data = await response.json();
-    if (response.status === StatusCodes.OK) {
-      if (data.access_token) {
-        cookies().set('access_token', data.access_token);
-      }
-      return data;
-    } else {
-      redirect('/signin');
-    }
-  } catch (error) {
-    redirect('/error');
-  }
-};
-
-export async function getProfile() {
-  const token = await getCookie('access_token');
-  const url = process.env.URL;
-  const response = await fetch(`${url}/api/accounts?kind=profile`, {
-    headers: {
-      Authorization: `Bearer ${token?.value}`,
-    },
-  });
-  const data = await response.json();
-  if (response.status === StatusCodes.OK) {
-    if (data.access_token) {
-      cookies().set('access_token', data.access_token);
-    }
-    return data;
-  }
-  return { error: data.message };
-}
-
 export async function startApp() {
   const account_id = await getCookie('account_id');
   const token = await getCookie('access_token');
   if (token && account_id) {
-    redirect(`${account_id.value}`);
+    redirect(`/${account_id.value}`);
   }
   redirect(`/signin`);
 }
@@ -102,6 +61,56 @@ export async function signup(formdata: any) {
   redirect(`/${response_data.account_id}`);
 }
 
+export async function signout() {
+  cookies().delete('access_token');
+  cookies().delete('account_id');
+  redirect('/signin');
+}
+
+export async function getAccount(accountId: string) {
+  const token = await getCookie('access_token');
+  const url = process.env.URL;
+  try {
+    const response = await fetch(`${url}/api/accounts/${accountId}`, {
+      headers: {
+        Authorization: `Bearer ${token?.value}`,
+      },
+    });
+    const data = await response.json();
+    if (response.status === StatusCodes.OK) {
+      if (data.access_token) {
+        cookies().set('access_token', data.access_token);
+      }
+      return data;
+    } else {
+      redirect('/signin');
+    }
+  } catch (error) {
+    redirect('/error');
+  }
+};
+
+export async function getChats(accountId: string) {
+  const token = await getCookie('access_token');
+  const url = process.env.URL;
+  const response = await fetch(
+    `${url}/api/accounts/${accountId}/chats`,
+    {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token?.value}`,
+      },
+    },
+  );
+
+  const data = await response.json();
+  if (response.status === StatusCodes.OK) {
+    return { error: null, chats: data };
+  }
+  return { error: data.message, chats: null };
+}
+
 export async function getMessages(accountId: string, chatId: string) {
   const token = await getCookie('access_token');
   const url = process.env.URL;
@@ -118,6 +127,28 @@ export async function getMessages(accountId: string, chatId: string) {
     return data;
   }
   return { error: data.message };
+}
+
+export async function getFriend(accountId: string, friendId: string) {
+
+  const token = await getCookie('access_token');
+  const url = process.env.URL;
+  const response = await fetch(
+    `${url}/api/accounts/${accountId}/friends/${friendId}`,
+    {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token?.value}`,
+      },
+    },
+  );
+
+  const data = await response.json();
+  if (response.status === StatusCodes.OK) {
+    return { error: null, friend: data };
+  }
+  return { error: data.message, friend: null };
 }
 
 export async function searchChatByName(chats: IChat[], fullname: string) {
@@ -139,13 +170,6 @@ export async function searchUsername(username: string) {
     return data;
   }
   return { error: data.message };
-}
-
-export async function searchChatFormHistory(chats: IChat[], chatId: string) {
-  if (chats.length > 0) {
-    return chats.filter((chat) => chat.id === chatId)[0];
-  }
-  return null;
 }
 
 export async function updateAccount(
@@ -202,12 +226,6 @@ export async function deactivateAccount(accountId: string) {
     return { message: data.message };
   }
   return { error: data.message };
-}
-
-export async function signout() {
-  cookies().delete('access_token');
-  cookies().delete('account_id');
-  redirect('/signin');
 }
 
 export async function changePassword(accountId: string, formdata: any) {
@@ -417,34 +435,9 @@ export async function unFriend(accountId: string, friendId: string) {
     },
   );
 
-  const data = await response.json();
   if (response.status === StatusCodes.OK) {
-    revalidatePath(`/chat/${accountId}/friends`);
-    return data;
+    redirect(`/${accountId}/friends`);
   }
-  return { error: data.message };
-}
-
-export async function getChats(accountId: string) {
-  const token = await getCookie('access_token');
-  const url = process.env.URL;
-  const response = await fetch(
-    `${url}/api/accounts/${accountId}/chats`,
-    {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token?.value}`,
-      },
-    },
-  );
-
-  const data = await response.json();
-  console.log('chats ', data);
-  if (response.status === StatusCodes.OK) {
-    return data;
-  }
-  return { error: data.message };
 }
 
 export async function getChat(accountId: string, chatId: string) {
@@ -466,8 +459,4 @@ export async function getChat(accountId: string, chatId: string) {
     return data;
   }
   return { error: data.message };
-}
-
-export async function getChatId(sender: string, receiver: string) {
-
 }

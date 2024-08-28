@@ -9,7 +9,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import { Request } from 'express';
 import { AppService } from './app.service';
 import { UserProfileService } from './services/user-profile/user-profile.service';
 import { ChatService } from './services/chat/chat.service';
-import { NotificationService } from './services/notification/notification.service';
 import { IPayload } from './types/payload';
 import { AuthGuard } from './services/auth/auth.guard';
 import { AuthService } from './services/auth/auth.service';
@@ -34,7 +32,6 @@ export class AppController {
     private readonly authService: AuthService,
     private readonly userService: UserProfileService,
     private readonly chatService: ChatService,
-    private readonly notificationService: NotificationService,
   ) {}
 
   @Get()
@@ -49,7 +46,6 @@ export class AppController {
   }
 
   @Post('auth/signup')
-  @HttpCode(HttpStatus.CREATED)
   async signup(@Body() data: SignupDto) {
     return this.authService.signup(data);
   }
@@ -60,13 +56,21 @@ export class AppController {
     return this.authService.signout(request.payload.username);
   }
 
+  // api/accounts/:accountId
+  @UseGuards(AuthGuard)
+  @Get('accounts/:accountId')
+  async getAccount(@Req() request: Request & { payload: IPayload }) {
+    return this.userService.getAccount(request.payload.sub);
+  }
+
+  // api/accounts/:accountId/chats
   @UseGuards(AuthGuard)
   @Get('accounts/:accountId/chats')
-  async getChats(@Req() request: Request & { payload: IPayload }) {
-    console.log('id ', request.payload);
+  async getChatList(@Req() request: Request & { payload: IPayload }) {
     return this.chatService.getChatsOf(request.payload.sub);
   }
 
+  // api/accounts/:accountId/chats/:chatId
   @UseGuards(AuthGuard)
   @Get('accounts/:accountId/chats/:chatId')
   async getChat(
@@ -77,30 +81,6 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('accounts/:accountId/chats/:chatId/messages')
-  async getMessages(
-    @Req() request: Request & { payload: IPayload },
-    @Param('chatId') chatId: string,
-  ) {
-    return this.chatService.getMessages(chatId);
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('accounts')
-  async searchUsername(@Query('username') username: string) {
-    if (username) {
-      return this.userService.search(username);
-    }
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('accounts/:accountId')
-  async getAccountById(@Req() request: Request & { payload: IPayload }) {
-    return this.userService.getAccountById(request.payload.sub);
-  }
-
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
   @Patch('accounts/:accountId')
   async updateAccount(
     @Body() data: UpdateUserDto,
@@ -125,40 +105,41 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('accounts/:accountId/friends')
-  async listFriends(@Param('accountId') accountId: string) {
-    return this.userService.getFriendList(accountId);
+  @Get('accounts/:accountId/chats/:chatId/messages')
+  async getMessages(
+    @Req() request: Request & { payload: IPayload },
+    @Param('chatId') chatId: string,
+  ) {
+    return this.chatService.getMessagesOf(chatId);
   }
 
   @UseGuards(AuthGuard)
-  @Delete('accounts/:accountId/friends/:friendId')
-  async unFriend(
-    @Param('accountId') accountId: string,
-    @Param('friendId') friendId: string,
-  ) {
-    return this.userService.removeFriend(accountId, friendId);
+  @Get('accounts/:accountId/friends')
+  async listFriends(@Req() request: Request & { payload: IPayload }) {
+    return this.userService.getFriendList(request.payload.sub);
   }
 
   @UseGuards(AuthGuard)
   @Get('accounts/:accountId/friend-requests/pendings')
-  async getFriendRequestPendings(@Param('accountId') accountId: string) {
-    return this.userService.getFriendRequestPendings(accountId);
+  async getFriendRequestPendings(
+    @Req() request: Request & { payload: IPayload },
+  ) {
+    return this.userService.getFriendRequestPendings(request.payload.sub);
   }
 
   @UseGuards(AuthGuard)
   @Get('accounts/:accountId/friend-requests')
-  async getFriendRequests(@Param('accountId') accountId: string) {
-    return this.userService.getFriendRequests(accountId);
+  async getFriendRequests(@Req() request: Request & { payload: IPayload }) {
+    return this.userService.getFriendRequests(request.payload.sub);
   }
 
   @UseGuards(AuthGuard)
   @Post('accounts/:accountId/friend-requests')
   async sentFriendRequest(
     @Req() request: Request & { payload: IPayload },
-    @Param('accountId') accountId: string,
     @Body() { friendName }: { friendName: string },
   ) {
-    return this.userService.sendRequest(accountId, friendName);
+    return this.userService.sendRequest(request.payload.sub, friendName);
   }
 
   @UseGuards(AuthGuard)
@@ -183,11 +164,20 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('/accounts/:accountId/friends/:friendId')
+  async getFriend(
+    @Param('friendId') friendId: string,
+    @Req() request: Request & { payload: IPayload },
+  ) {
+    return this.userService.getFriend(request.payload.sub, friendId);
+  }
+
+  @UseGuards(AuthGuard)
   @Delete('/accounts/:accountId/friends/:friendId')
   async removeFriend(
-    @Param('accountId') accountId: string,
+    @Req() request: Request & { payload: IPayload },
     @Param('friendId') friendId: string,
   ) {
-    return this.userService.removeFriend(accountId, friendId);
+    return this.userService.removeFriend(request.payload.sub, friendId);
   }
 }

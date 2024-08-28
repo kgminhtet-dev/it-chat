@@ -27,39 +27,24 @@ export class UserProfileService {
     throw new BadRequestException('Invalid data.');
   }
 
-  async getAccountById(id: string) {
-    const account = await this.accountRepoService.findById(id, { chats: true });
+  async getAccount(id: string) {
+    const account = await this.accountRepoService.findById(id);
     if (!account) {
       throw new NotFoundException(`User not found.`);
     }
-
-    const chats = account.chats.map((chat) => {
-      const participants = chat.accounts.map((account) => ({
-        id: account.id,
-        fullname: account.fullname,
-        username: account.username,
-      }));
-      const contact = participants.find((participant) => participant.id !== id);
-
-      return {
-        id: chat.id,
-        name: chat.name,
-        contact,
-        participants,
-        lastMessage: chat.lastMessage,
-        lastChatTime: chat.lastChatTime,
-      };
-    });
-
     return {
-      account: {
-        id: account.id,
-        fullname: account.fullname,
-        username: '@' + account.username,
-        email: account.email,
-      },
-      chats,
+      id: account.id,
+      fullname: account.fullname,
+      username: '@' + account.username,
+      email: account.email,
     };
+  }
+
+  async getFriend(accountId: string, friendId: string) {
+    const friends = await this.getFriendList(accountId);
+    const friend = friends.find((f) => f.id === friendId);
+    if (!friend) throw new NotFoundException(`User not found.`);
+    return friend;
   }
 
   async search(username: string) {
@@ -81,11 +66,13 @@ export class UserProfileService {
     const account = await this.accountRepoService.findById(id, {
       friends: true,
     });
-    return account.friends.map((friend) => ({
-      id: friend.id,
-      fullname: friend.fullname,
-      username: '@' + friend.username,
-    }));
+    return account.friends
+      .filter((friend) => !friend.isDeactivated)
+      .map((friend) => ({
+        id: friend.id,
+        fullname: friend.fullname,
+        username: '@' + friend.username,
+      }));
   }
 
   async getFriendRequestPendings(id: string) {
@@ -321,6 +308,7 @@ export class UserProfileService {
         message: 'Successfully unfriend.',
       };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Internal Server Error');
     }
   }

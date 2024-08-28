@@ -31,9 +31,9 @@ export default function SignoutButton() {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Signout</AlertDialogTitle>
+          <AlertDialogTitle>Logout</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure to signout?
+            Are you sure to logout?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

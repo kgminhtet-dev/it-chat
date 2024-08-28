@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import * as path from 'node:path';
-import { AppWsGateway } from './app-ws.gateway';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './services/auth/auth.module';
@@ -29,6 +28,6 @@ import { UserProfileModule } from './services/user-profile/user-profile.module';
     NotificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppWsGateway, Map],
+  providers: [AppService],
 })
 export class AppModule {}

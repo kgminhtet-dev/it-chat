@@ -13,54 +13,19 @@ export class AccountRepoService {
     private readonly accountRepository: Repository<Account>,
   ) {}
 
-  findAll(ids?: string[]): Promise<Account[]> {
-    if (!ids) return this.accountRepository.find();
+  findAll(ids: string[]): Promise<Account[]> {
     return this.accountRepository.find({
       where: ids.map((id) => ({ id })),
     });
   }
 
-  findByEmail(email: string, chats = false) {
-    if (chats)
-      return this.accountRepository.findOne({
-        where: {
-          email,
-        },
-        relations: {
-          chats: {
-            accounts: true,
-          },
-        },
-        order: {
-          chats: {
-            lastChatTime: 'desc',
-          },
-        },
-      });
+  findByEmail(email: string) {
     return this.accountRepository.findOne({
       where: { email },
     });
   }
 
-  findByUsername(username: string, chats?: boolean) {
-    if (chats) {
-      return this.accountRepository.findOne({
-        where: {
-          username,
-        },
-        relations: {
-          chats: {
-            accounts: true,
-          },
-        },
-        order: {
-          chats: {
-            lastChatTime: 'desc',
-          },
-        },
-      });
-    }
-
+  findByUsername(username: string) {
     return this.accountRepository.findOne({
       where: {
         username,
@@ -75,7 +40,7 @@ export class AccountRepoService {
       },
       relations: {
         chats: {
-          accounts: true,
+          members: true,
         },
       },
       order: {
@@ -106,7 +71,7 @@ export class AccountRepoService {
       relations: {
         friends: true,
         chats: {
-          accounts: true,
+          members: true,
         },
       },
       order: {
@@ -127,6 +92,16 @@ export class AccountRepoService {
 
     if (options.friends && options.chats)
       return this.findIncludeWithFriendsAndChat(id);
+  }
+
+  findFriend(friendId: string) {
+    return this.accountRepository.findOne({
+      where: {
+        friends: {
+          id: friendId,
+        },
+      },
+    });
   }
 
   create(createAccountDto: CreateAccountDto) {

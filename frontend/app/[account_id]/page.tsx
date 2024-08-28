@@ -1,8 +1,8 @@
 import BlankConversation from '@/components/app-ui/blank-conversation';
 
-export default function ChatPage() {
+export default function AccountPage() {
   return (
-    <div className={'h-full flex justify-center items-center'}>
+    <div className={'h-screen w-full flex justify-center items-center'}>
       <BlankConversation />
     </div>
   );

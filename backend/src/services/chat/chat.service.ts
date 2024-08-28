@@ -4,6 +4,7 @@ import { IMessage } from '../../types/message';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { ChatRepoService } from '../repository/Chat/chat-repo.service';
 import { MessageRepoService } from '../repository/Message/message-repo.service';
+import { Chat, Message } from '../repository/entities/entities';
 
 @Injectable()
 export class ChatService {
@@ -17,24 +18,40 @@ export class ChatService {
     return uuidv4();
   }
 
-  async getMessages(chatId: string) {
-    const messages = await this.messageRepoService.findByChatId(chatId);
-    return messages.map(
-      (message) =>
-        message.sender && {
-          ...message,
-          sender: '@' + message.sender.username,
-        },
-    );
-  }
-
-  async getAccounts(ids: string[]) {
-    const accounts = await this.accountRepoService.findAll(ids);
-    return accounts.map((account) => ({
+  private transformChat(account_id: string, chat: Chat) {
+    const members = chat.members.map((account) => ({
       id: account.id,
       fullname: account.fullname,
       username: '@' + account.username,
+      isDeactivated: account.isDeactivated,
     }));
+
+    const contact = members.filter((member) => member.id !== account_id)[0];
+
+    return {
+      id: chat.id,
+      name: chat.name,
+      members,
+      contact,
+      lastMessage: chat.lastMessage,
+      lastChatTime: chat.lastChatTime,
+      createdAt: chat.createdAt,
+      updatedAt: chat.updatedAt,
+    };
+  }
+
+  private transformMessage(message: Message) {
+    return {
+      id: message.id,
+      content: message.content,
+      sender: '@' + message.sender.id,
+      createdAt: message.createdAt,
+      updatedAt: message.updatedAt,
+    };
+  }
+
+  async createChat(chatId: string, participants: string[]) {
+    return this.chatRepoService.create(chatId, participants);
   }
 
   createMessage(sender: string, chatId: string, content: string): IMessage {
@@ -48,61 +65,38 @@ export class ChatService {
     };
   }
 
-  saveMessage(message: IMessage) {
-    return this.messageRepoService.save(message);
-  }
-
-  async getChatIdsOf(accountId: string) {
+  async getChatIdListOf(accountId: string) {
     return this.chatRepoService.findIdsByAccountId(accountId);
   }
 
   async getChatOf(accountId: string, chatId: string) {
     const chat = await this.chatRepoService.findById(chatId, true);
-    const participants = chat.accounts.map((account) => ({
-      id: account.id,
-      fullname: account.fullname,
-      username: account.username,
-    }));
-    const contact = participants.filter(
-      (participant) => participant.id !== accountId,
-    )[0];
-    return {
-      id: chat.id,
-      name: chat.name,
-      participants,
-      contact,
-      lastMessage: chat.lastMessage,
-      lastChatTime: chat.lastChatTime,
-    };
+    return this.transformChat(accountId, chat);
   }
 
   async getChatsOf(accountId: string) {
     const account = await this.accountRepoService.findById(accountId, {
       chats: true,
     });
-    console.log('account ', account);
-    return account.chats.map((chat) => {
-      const contact = chat.accounts.filter(
-        (member) => accountId != member.id,
-      )[0];
-      return {
-        id: chat.id,
-        name: chat.name,
-        lastMessage: chat.lastMessage,
-        lastChatTime: chat.lastChatTime,
-        contact: {
-          id: contact.id,
-          username: '@' + contact.username,
-          fullname: contact.fullname,
-          isDeactivated: contact.isDeactivated,
-        },
-        createdAt: chat.createdAt,
-        updatedAt: chat.updatedAt,
-      };
-    });
+    return account.chats.map((chat) => this.transformChat(account.id, chat));
   }
 
-  async createChat(chatId: string, participants: string[]) {
-    return this.chatRepoService.create(chatId, participants);
+  async getMessagesOf(chatId: string) {
+    const messages = await this.messageRepoService.findByChatId(chatId);
+    return messages.map((message) => this.transformMessage(message));
+  }
+
+  async getMembers(member_ids: string[]) {
+    const accounts = await this.accountRepoService.findAll(member_ids);
+    return accounts.map((account) => ({
+      id: account.id,
+      fullname: account.fullname,
+      username: '@' + account.username,
+    }));
+  }
+
+  async saveMessage(message: IMessage) {
+    const savedMessage = await this.messageRepoService.save(message);
+    return this.transformMessage(savedMessage);
   }
 }

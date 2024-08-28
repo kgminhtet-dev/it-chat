@@ -43,8 +43,8 @@ export class AppWsGateway {
     }
     this.connList.set(accountId, client);
     try {
-      const chatIds = await this.chatService.getChatIdsOf(accountId);
-      chatIds.forEach((room) => client.join(room));
+      const chatIds = await this.chatService.getChatIdListOf(accountId);
+      chatIds.forEach((room) => client.join(room.id));
       this.logger.log(`Client connected: ${client.id}`);
     } catch (error) {
       this.logger.error(error);
@@ -55,8 +55,8 @@ export class AppWsGateway {
 
   async handleDisconnect(client: Socket) {
     const accountId = client.handshake.query.id as string;
-    const chatIds = await this.chatService.getChatIdsOf(accountId);
-    chatIds.forEach((room) => client.leave(room));
+    const chatIds = await this.chatService.getChatIdListOf(accountId);
+    chatIds.forEach((room) => client.leave(room.id));
     this.connList.delete(accountId);
     this.logger.log(`Client disconnected: ${client.id} and ${accountId}`);
   }
@@ -66,7 +66,7 @@ export class AppWsGateway {
     @MessageBody() { senderId, receiverId }: ChatIdEventDto,
   ) {
     const chatId = this.appService.generateUUID4();
-    const accounts = await this.chatService.getAccounts([senderId, receiverId]);
+    const accounts = await this.chatService.getMembers([senderId, receiverId]);
     const senderConn = this.connList.get(senderId);
     if (!senderConn) {
       this.server.emit('error', { message: 'Invalid socket.' });
@@ -87,7 +87,7 @@ export class AppWsGateway {
   ) {
     const chat = await this.chatService.createChat(chatId, participants);
     const message = this.chatService.createMessage(sender, chatId, content);
-    const members = chat.accounts.map((account) => ({
+    const members = chat.members.map((account) => ({
       id: account.id,
       fullname: account.fullname,
       username: '@' + account.username,

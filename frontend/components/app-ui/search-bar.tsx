@@ -8,13 +8,16 @@ import { alreadyChats, searchChatByName, searchUsername } from '@/lib/actions';
 import { IAccount } from '@/lib/types/IAccount';
 import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
-import useAppStore from '@/components/hooks/use-app-store';
 import { IProfile } from '@/lib/types/IProfile';
+import { IChat } from '@/lib/types/IChat';
 
-export default function SearchBar(): JSX.Element {
+interface Props {
+  account: IProfile;
+  chats: IChat[];
+}
+
+export default function SearchBar({ account, chats }: Props): JSX.Element {
   const { toast } = useToast();
-  const chats = useAppStore((state) => state.chats);
-  const account = useAppStore((state) => state.profile) as IProfile;
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<
     {

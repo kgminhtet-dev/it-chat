@@ -1,30 +1,26 @@
-"use client";
+'use client';
 
-import useAppStore from "@/components/hooks/use-app-store";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { confirmFriendRequest, rejectFriendRequest } from "@/lib/actions";
-import { IFriendRequest } from "@/lib/types/IFriendRequest";
-import { IProfile } from "@/lib/types/IProfile";
-import { shortName } from "@/lib/utils";
-import { CheckIcon, Cross2Icon } from "@radix-ui/react-icons";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import { confirmFriendRequest, rejectFriendRequest } from '@/lib/actions';
+import { IFriendRequest } from '@/lib/types/IFriendRequest';
+import { shortName } from '@/lib/utils';
+import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';
 
 interface Props {
+  accountId: string;
   friendRequest: IFriendRequest;
 }
 
-export default function ReceivedFriendRequest({
-  friendRequest,
-}: Props): JSX.Element {
+export default function ReceivedFriendRequest({ accountId, friendRequest }: Props): JSX.Element {
   const { toast } = useToast();
-  const profile = useAppStore((state) => state.profile) as IProfile;
 
   return (
     <div
-      className={"flex bg-gray-200 rounded justify-between items-center p-2"}
+      className={'flex bg-gray-200 rounded justify-between items-center p-2'}
     >
-      <div className={"flex gap-1 items-center"}>
+      <div className={'flex gap-1 items-center'}>
         <Avatar className="h-10 w-10 text-blue-500">
           <AvatarImage src="" />
           <AvatarFallback>
@@ -33,54 +29,54 @@ export default function ReceivedFriendRequest({
         </Avatar>
         <p>{friendRequest.sender.fullname}</p>
       </div>
-      <div className={"flex gap-1"}>
+      <div className={'flex gap-1'}>
         <Button
-          size={"icon"}
-          variant={"outline"}
-          className={"rounded-full p-2"}
+          size={'icon'}
+          variant={'outline'}
+          className={'rounded-full p-2'}
           onClick={async () => {
             const data = await rejectFriendRequest(
-              profile.id,
+              accountId,
               friendRequest.id,
             );
             if (data.error)
               toast({
-                variant: "destructive",
+                variant: 'destructive',
                 title: data.error,
               });
             else {
               toast({
-                variant: "default",
+                variant: 'default',
                 title: data.message,
               });
             }
           }}
         >
-          <Cross2Icon className={"w-full h-full text-red-600"} />
+          <Cross2Icon className={'w-full h-full text-red-600'} />
         </Button>
         <Button
-          size={"icon"}
-          variant={"outline"}
-          className={"rounded-full p-2"}
+          size={'icon'}
+          variant={'outline'}
+          className={'rounded-full p-2'}
           onClick={async () => {
             const data = await confirmFriendRequest(
-              profile.id,
+              accountId,
               friendRequest.id,
             );
             if (data.error)
               toast({
-                variant: "destructive",
+                variant: 'destructive',
                 title: data.error,
               });
             else {
               toast({
-                variant: "default",
+                variant: 'default',
                 title: data.message,
               });
             }
           }}
         >
-          <CheckIcon className={"w-full h-full text-green-600"} />
+          <CheckIcon className={'w-full h-full text-green-600'} />
         </Button>
       </div>
     </div>

@@ -8,6 +8,11 @@ interface Props {
   chat: IChat;
 }
 
+interface Props {
+  accountId: string;
+  chat: IChat;
+}
+
 export default function ChatListItem({ accountId, chat }: Props) {
   return (
     <Link

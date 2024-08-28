@@ -11,7 +11,7 @@ export default async function ProfilePage(
   const account = await getAccount(params.accountId);
 
   return (
-    <main className={'h-full grid'}>
+    <main className={'h-full grid grid-rows-12'}>
       <CoverPhoto />
       <ProfileInfo account={account} />
       <div className={'row-span-1 flex justify-start items-center gap-1'}>

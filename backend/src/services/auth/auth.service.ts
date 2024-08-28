@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   async signin(email: string, password: string) {
-    const account = await this.accountRepoService.findByEmail(email, true);
+    const account = await this.accountRepoService.findByEmail(email);
     if (!account) {
       throw new UnauthorizedException(`Incorrect email.`);
     }
@@ -68,7 +68,7 @@ export class AuthService {
     };
   }
 
-  signout(username: string) {
+  signout(id: string) {
     return {
       message: 'Successfully signout.',
     };

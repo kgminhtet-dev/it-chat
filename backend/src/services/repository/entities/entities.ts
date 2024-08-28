@@ -30,7 +30,7 @@ export class Account {
   @Column({ type: 'bool', default: false })
   isDeactivated: boolean;
 
-  @ManyToMany(() => Chat, (chat) => chat.accounts)
+  @ManyToMany(() => Chat, (chat) => chat.members)
   chats: Chat[];
 
   @ManyToMany(() => Account, (account) => account.friends)
@@ -104,7 +104,7 @@ export class Chat {
   @JoinTable({
     name: 'account_chat',
   })
-  accounts: Account[];
+  members: Account[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_DATE' })
   createdAt: Date;
