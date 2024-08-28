@@ -1,5 +1,4 @@
 import { redirect } from 'next/navigation';
-import WebSocket from '@/components/app-ui/websocket';
 import { getCookie } from '@/lib/actions';
 import AppNav from '@/components/app-ui/app-nav';
 
@@ -13,7 +12,6 @@ export default async function ChatLayout(
 
   return (
     <main className={'h-screen grid grid-flow-col grid-cols-4'}>
-      <WebSocket token={token.value} />
       <AppNav accountId={account_id.value} />
       <div className={'grid-rows-12 col-span-3'}>
         {children}
