@@ -10,7 +10,6 @@ export default function FriendLayout({
   const pathname = usePathname().split("/");
   const accountId = pathname[1];
   const currentLink = pathname[pathname.length - 1];
-  console.log("current link", currentLink, pathname);
 
   return (
     <main className={"h-screen w-full grid grid-rows-12"}>
