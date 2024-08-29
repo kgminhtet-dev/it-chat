@@ -1,23 +1,29 @@
-import ConversationBar from '@/components/app-ui/conversation-bar';
-import MessageList from '@/components/app-ui/message-list';
-import MessageInput from '@/components/app-ui/message-input';
-import { getAccount, getChat } from '@/lib/actions/server-actions';
+"use client";
 
-export default async function ConversationPage(
-  { params }: { params: { account_id: string, chat_id: string } },
-) {
-  const account = await getAccount(params.account_id);
-  const chat = await getChat(params.account_id, params.chat_id);
+import ConversationBar from "@/components/app-ui/conversation-bar";
+import FetchChat from "@/components/app-ui/fetch-chat";
+import MessageInput from "@/components/app-ui/message-input";
+import MessageList from "@/components/app-ui/message-list";
+import useAppStore from "@/components/hooks/use-app-store";
+
+export default function ConversationPage({
+  params,
+}: {
+  params: { account_id: string; chat_id: string };
+}) {
+  const chat = useAppStore((state) => state.currentChat);
+  if (!chat)
+    return <FetchChat accountId={params.account_id} chatId={params.chat_id} />;
 
   return (
     <div className="h-full row-span-12 flex flex-col">
-      <div className={'h-12'}>
-        <ConversationBar chat={chat} />
+      <div className={"h-12"}>
+        <ConversationBar />
       </div>
-      <div className={'flex-1 overflow-auto'}>
-        <MessageList account={account} chat={chat} />
+      <div className={"flex-1 overflow-auto"}>
+        <MessageList />
       </div>
-      <MessageInput account={account} chat={chat} />
+      <MessageInput />
     </div>
   );
 }

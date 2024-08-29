@@ -25,7 +25,6 @@ export class ChatService {
       username: '@' + account.username,
       isDeactivated: account.isDeactivated,
     }));
-
     const contact = members.filter((member) => member.id !== account_id)[0];
 
     return {
@@ -44,7 +43,7 @@ export class ChatService {
     return {
       id: message.id,
       content: message.content,
-      sender: '@' + message.sender.id,
+      sender: message.sender.id,
       createdAt: message.createdAt,
       updatedAt: message.updatedAt,
     };
@@ -70,8 +69,12 @@ export class ChatService {
   }
 
   async getChatOf(accountId: string, chatId: string) {
-    const chat = await this.chatRepoService.findById(chatId, true);
-    return this.transformChat(accountId, chat);
+    const chat = await this.chatRepoService.findById(chatId);
+    const messages = chat.messages;
+    return {
+      chat: this.transformChat(accountId, chat),
+      messages: messages.map((message) => this.transformMessage(message)),
+    };
   }
 
   async getChatsOf(accountId: string) {

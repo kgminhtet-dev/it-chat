@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Chat } from '../entities/entities';
 import { AccountRepoService } from '../Account/account-repo.service';
+import { Chat } from '../entities/entities';
 
 @Injectable()
 export class ChatRepoService {
@@ -12,17 +12,15 @@ export class ChatRepoService {
     private readonly accountRepoService: AccountRepoService,
   ) {}
 
-  async findById(id: string, members = false) {
-    if (members) {
-      return this.chatRepository.findOne({
-        where: { id },
-        relations: {
-          members: true,
-        },
-      });
-    }
+  async findById(id: string) {
     return this.chatRepository.findOne({
       where: { id },
+      relations: {
+        messages: {
+          sender: true,
+        },
+        members: true,
+      },
     });
   }
 

@@ -1,28 +1,25 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/ui/input';
-import { IChat } from '@/lib/types/IChat';
-import { useState } from 'react';
-import { IProfile } from '@/lib/types/IProfile';
+import { Input } from "@/components/ui/input";
+import { IAccount } from "@/lib/types/IAccount";
+import { useState } from "react";
+import useAppStore from "../hooks/use-app-store";
 
-interface Props {
-  account: IProfile;
-  chat: IChat;
-}
-
-export default function MessageInput({ chat }: Props) {
-  const [message, setMessage] = useState('');
+export default function MessageInput() {
+  const chat = useAppStore((state) => state.currentChat);
+  const account = useAppStore((state) => state.account) as IAccount;
+  const [message, setMessage] = useState("");
 
   return (
     <div className="bg-muted p-1 flex items-center gap-2 rounded-md bg-gray-300">
       <Input
         id="message"
-        name={'message'}
+        name={"message"}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && message) {
-            setMessage('');
+          if (e.key === "Enter" && message) {
+            setMessage("");
           }
         }}
         placeholder="Type your message..."

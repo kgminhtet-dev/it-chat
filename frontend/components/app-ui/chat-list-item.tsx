@@ -1,7 +1,11 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getMessages } from "@/lib/actions/server-actions";
 import { IChat } from "@/lib/types/IChat";
 import { formatDateToTimeString, shortName } from "@/lib/utils";
 import Link from "next/link";
+import useAppStore from "../hooks/use-app-store";
 
 interface Props {
   accountId: string;
@@ -9,9 +13,17 @@ interface Props {
 }
 
 export default function ChatListItem({ accountId, chat }: Props) {
+  const setMessages = useAppStore((state) => state.setMessages);
+  const setCurrentChat = useAppStore((state) => state.setCurrentChat);
+
   return (
     <Link
-      href={`/${accountId}/chat/${chat.id}`}
+      href={`/${accountId}/chats/${chat.id}`}
+      onClick={async () => {
+        setCurrentChat(chat);
+        const messages = await getMessages(accountId, chat.id);
+        setMessages(messages);
+      }}
       className={
         "flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors"
       }
