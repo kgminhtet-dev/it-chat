@@ -15,16 +15,16 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AppService } from './app.service';
-import { UserProfileService } from './services/user-profile/user-profile.service';
-import { ChatService } from './services/chat/chat.service';
-import { IPayload } from './types/payload';
-import { AuthGuard } from './services/auth/auth.guard';
-import { AuthService } from './services/auth/auth.service';
+import { ActionDto } from './dto/action.dto';
+import { FriendRequestDto } from './dto/friend-request.dto';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ActionDto } from './dto/action.dto';
-import { FriendRequestDto } from './dto/friend-request.dto';
+import { AuthGuard } from './services/auth/auth.guard';
+import { AuthService } from './services/auth/auth.service';
+import { ChatService } from './services/chat/chat.service';
+import { UserProfileService } from './services/user-profile/user-profile.service';
+import { IPayload } from './types/payload';
 
 @Controller('api')
 export class AppController {
@@ -64,8 +64,8 @@ export class AppController {
     @Req() request: Request & { payload: IPayload },
     @Query('include') include: string,
   ) {
-    // if (include !== 'chats')
-    // return this.userService.getAccount(request.payload.sub);
+    if (include !== 'chats')
+      return this.userService.getAccount(request.payload.sub);
     return this.userService.getAccountIncludedChats(request.payload.sub);
   }
 

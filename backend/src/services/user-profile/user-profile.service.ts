@@ -6,12 +6,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { IAccount } from '../../types/account';
+import { IChat } from '../../types/chat';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { IChangePassword } from '../repository/Account/dto/change-password';
 import { FriendRequestRepoService } from '../repository/FriendRequest/friendRequest-repo.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { IAccount } from '../../types/account';
-import { IChat } from '../../types/chat';
 
 @Injectable()
 export class UserProfileService {
@@ -20,7 +20,16 @@ export class UserProfileService {
     private readonly friendRequestRepoService: FriendRequestRepoService,
   ) {}
 
-  private transformAccount(account: IAccount) {
+  private transformAccount(account: IAccount, email = false) {
+    if (email)
+      return {
+        id: account.id,
+        fullname: account.fullname,
+        username: '@' + account.username,
+        email: account.email,
+        isDeactivated: account.isDeactivated,
+      };
+
     return {
       id: account.id,
       fullname: account.fullname,
@@ -69,7 +78,7 @@ export class UserProfileService {
     }
 
     return {
-      account: this.transformAccount(account),
+      account: this.transformAccount(account, true),
     };
   }
 
@@ -80,7 +89,7 @@ export class UserProfileService {
     }
 
     return {
-      account: this.transformAccount(account),
+      account: this.transformAccount(account, true),
       chats: this.transformChats(account, account.chats),
     };
   }

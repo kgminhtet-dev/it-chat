@@ -28,7 +28,7 @@ export default function SearchBar(): JSX.Element {
 
   return (
     <>
-      <div className="relative row-span-1 flex items-center rounded-md bg-background px-4 py-2 shadow-sm">
+      <div className="relative row-span-1 flex items-center rounded-md bg-background px-2 py-2 shadow-sm">
         <Input
           type="search"
           placeholder="Search chats or start conversation..."

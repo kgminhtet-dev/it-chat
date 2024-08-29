@@ -6,7 +6,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './services/auth/auth.module';
 import { ChatModule } from './services/chat/chat.module';
-import { FriendModule } from './services/friend/friend.module';
 import { NotificationModule } from './services/notification/notification.module';
 import { RepositoryModule } from './services/repository/repository.module';
 import { UserProfileModule } from './services/user-profile/user-profile.module';
@@ -24,7 +23,6 @@ import { UserProfileModule } from './services/user-profile/user-profile.module';
     AuthModule,
     UserProfileModule,
     ChatModule,
-    FriendModule,
     NotificationModule,
   ],
   controllers: [AppController],

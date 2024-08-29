@@ -11,9 +11,9 @@ export default function ChatList() {
   const chats = useAppStore((state) => state.chats);
 
   return (
-    <div className={"row-span-10 border-b pl-2"}>
+    <div className={"row-span-10 border-b p-1"}>
       {chats.length > 0 && (
-        <ScrollArea className={"h-full pr-2"}>
+        <ScrollArea className={"h-full"}>
           {chats.map((chat, index) => (
             <div key={index}>
               <ChatListItem chat={chat} accountId={account.id} />

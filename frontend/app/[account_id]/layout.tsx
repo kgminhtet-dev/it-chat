@@ -3,6 +3,7 @@
 import AppNav from "@/components/app-ui/app-nav";
 import FetchProfile from "@/components/app-ui/fetch-profile";
 import useAppStore from "@/components/hooks/use-app-store";
+import { Toaster } from "@/components/ui/toaster";
 import { usePathname } from "next/navigation";
 
 export default function AccountLayout({
@@ -17,7 +18,10 @@ export default function AccountLayout({
   return (
     <main className={"w-screen h-screen grid grid-flow-col grid-cols-4"}>
       <AppNav account={account} />
-      <div className={"h-screen col-span-3 overflow-auto"}>{children}</div>
+      <div className={"h-screen col-span-3 overflow-auto"}>
+        {children}
+        <Toaster />
+      </div>
     </main>
   );
 }
