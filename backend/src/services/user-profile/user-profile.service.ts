@@ -10,6 +10,8 @@ import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { IChangePassword } from '../repository/Account/dto/change-password';
 import { FriendRequestRepoService } from '../repository/FriendRequest/friendRequest-repo.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { IAccount } from '../../types/account';
+import { IChat } from '../../types/chat';
 
 @Injectable()
 export class UserProfileService {
@@ -17,6 +19,39 @@ export class UserProfileService {
     private readonly accountRepoService: AccountRepoService,
     private readonly friendRequestRepoService: FriendRequestRepoService,
   ) {}
+
+  private transformAccount(account: IAccount) {
+    return {
+      id: account.id,
+      fullname: account.fullname,
+      username: '@' + account.username,
+      isDeactivated: account.isDeactivated,
+    };
+  }
+
+  private transformChats(account: IAccount, chats: IChat[]) {
+    if (chats.length === 0) return [];
+
+    return chats.map((chat) => {
+      const members = chat.members.map((member) => ({
+        id: member.id,
+        fullname: member.fullname,
+        username: '@' + member.username,
+        isDeactivated: member.isDeactivated,
+      }));
+      const contact = members.filter((member) => account.id !== member.id)[0];
+      return {
+        id: chat.id,
+        name: chat.name,
+        lastMessage: chat.lastMessage,
+        lastChatTime: chat.lastChatTime,
+        members,
+        contact,
+        createdAt: chat.createdAt,
+        updatedAt: chat.updatedAt,
+      };
+    });
+  }
 
   async update(id: string, params: UpdateUserDto) {
     if (params.fullname) return this.changeName(id, params.fullname);
@@ -32,11 +67,21 @@ export class UserProfileService {
     if (!account) {
       throw new NotFoundException(`User not found.`);
     }
+
     return {
-      id: account.id,
-      fullname: account.fullname,
-      username: '@' + account.username,
-      email: account.email,
+      account: this.transformAccount(account),
+    };
+  }
+
+  async getAccountIncludedChats(id: string) {
+    const account = await this.accountRepoService.findById(id, { chats: true });
+    if (!account) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    return {
+      account: this.transformAccount(account),
+      chats: this.transformChats(account, account.chats),
     };
   }
 

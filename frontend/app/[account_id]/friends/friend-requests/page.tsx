@@ -1,6 +1,6 @@
 import ReceivedFriendRequest from '@/components/app-ui/received-friend-request';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { getFriendRequests } from '@/lib/actions';
+import { getFriendRequests } from '@/lib/actions/server-actions';
 import { IFriendRequest } from '@/lib/types/IFriendRequest';
 
 export default async function FriendRequests(

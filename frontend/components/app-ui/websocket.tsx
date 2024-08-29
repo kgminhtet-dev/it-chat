@@ -15,7 +15,6 @@ export default function Websocket({ token }: Props) {
   const addChat = useAppStore((state) => state.addChat);
   const setChats = useAppStore((state) => state.setChats);
   const chats = useAppStore((state) => state.chats);
-  const setMessageNoti = useAppStore((state) => state.setMessageNoti);
   const url = `ws://localhost:8080`;
 
   useEffect(() => {
@@ -42,10 +41,7 @@ export default function Websocket({ token }: Props) {
         chats.map((chat) =>
           chat.id === message.chatId
             ? {
-              id: chat.id,
-              contact: chat.contact,
-              participants: chat.participants,
-              name: chat.name,
+              ...chat,
               lastMessage: message.content,
               lastChatTime: message.createdAt,
             }
@@ -77,10 +73,6 @@ export default function Websocket({ token }: Props) {
       // }
     });
 
-    socket.on('message noti', (data) => {
-      setMessageNoti(data);
-    });
-
     setSocket(socket);
 
     return () => {
@@ -89,5 +81,5 @@ export default function Websocket({ token }: Props) {
     };
   }, [token, url]);
 
-  return <div className="absolute hidden" />;
+  return <div className="absolute w-0 h-0 top-0-0 left-0 hidden" />;
 }

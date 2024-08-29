@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { confirmFriendRequest, rejectFriendRequest } from '@/lib/actions';
+import { confirmFriendRequest, rejectFriendRequest } from '@/lib/actions/server-actions';
 import { IFriendRequest } from '@/lib/types/IFriendRequest';
 import { shortName } from '@/lib/utils';
 import { CheckIcon, Cross2Icon } from '@radix-ui/react-icons';

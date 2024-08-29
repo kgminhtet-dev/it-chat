@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import SearchListItem from '@/components/app-ui/search-list-item';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/components/ui/use-toast';
-import { alreadyChats, searchChatByName, searchUsername } from '@/lib/actions';
-import { IAccount } from '@/lib/types/IAccount';
-import { SearchIcon } from 'lucide-react';
-import { useState } from 'react';
-import { IProfile } from '@/lib/types/IProfile';
-import { IChat } from '@/lib/types/IChat';
+import SearchListItem from "@/components/app-ui/search-list-item";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  alreadyChats,
+  searchChatByName,
+  searchUsername,
+} from "@/lib/actions/server-actions";
+import { IAccount } from "@/lib/types/IAccount";
+import { SearchIcon } from "lucide-react";
+import { useState } from "react";
+import useAppStore from "../hooks/use-app-store";
 
-interface Props {
-  account: IProfile;
-  chats: IChat[];
-}
-
-export default function SearchBar({ account, chats }: Props): JSX.Element {
+export default function SearchBar(): JSX.Element {
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState('');
+  const account = useAppStore((state) => state.account);
+  const chats = useAppStore((state) => state.chats);
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<
     {
       account: IAccount;
@@ -37,9 +37,9 @@ export default function SearchBar({ account, chats }: Props): JSX.Element {
             setSearchTerm(e.target.value);
           }}
           onKeyDown={async (e) => {
-            if (e.key === 'Enter' && searchTerm.length > 0) {
+            if (e.key === "Enter" && searchTerm.length > 0) {
               const name = searchTerm.toLowerCase();
-              if (name[0] === '@') {
+              if (name[0] === "@") {
                 const chat = await alreadyChats(chats, name);
                 if (chat) {
                   setSearchResults([
@@ -53,7 +53,7 @@ export default function SearchBar({ account, chats }: Props): JSX.Element {
                 const username = await searchUsername(name);
                 if (username.error) {
                   toast({
-                    variant: 'destructive',
+                    variant: "destructive",
                     title: username.error,
                   });
                   setSearchResults([]);

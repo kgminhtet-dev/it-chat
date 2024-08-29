@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import useAppStore from '@/components/hooks/use-app-store';
 import { IProfile } from '@/lib/types/IProfile';
-import { getFriends } from '@/lib/actions';
+import { getFriends } from '@/lib/actions/server-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FetchFriends() {

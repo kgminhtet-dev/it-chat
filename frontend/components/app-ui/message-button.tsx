@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
 import useAppStore from '@/components/hooks/use-app-store';
-import { alreadyChats, getMessages } from '@/lib/actions';
+import { alreadyChats, getMessages } from '@/lib/actions/server-actions';
 import { IProfile } from '@/lib/types/IProfile';
 import { useRouter } from 'next/navigation';
-import { getChat } from '@/lib/web-socket-actions';
+import { getChat } from '@/lib/actions/web-socket-actions';
 import { Socket } from 'socket.io-client';
 
 export default function MessageButton({ to }: { to: string }) {

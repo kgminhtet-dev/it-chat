@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { signin } from '@/lib/actions';
+import { signin } from '@/lib/actions/server-actions';
+import useAppStore from '@/components/hooks/use-app-store';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -16,6 +18,9 @@ const formSchema = z.object({
 
 export default function SignInForm() {
   const { toast } = useToast();
+  const router = useRouter();
+  const setAccount = useAppStore((state) => state.setAccount);
+  const setChats = useAppStore((state) => state.setChats);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,6 +36,9 @@ export default function SignInForm() {
         variant: 'destructive',
         title: data.message,
       });
+    setAccount(data.account);
+    setChats(data.chats);
+    router.push(`/${data.account.id}/`);
   };
 
   return (

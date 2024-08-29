@@ -19,7 +19,16 @@ export class AccountRepoService {
     });
   }
 
-  findByEmail(email: string) {
+  findByEmail(email: string, chatRelation = false) {
+    if (chatRelation)
+      return this.accountRepository.findOne({
+        where: { email },
+        relations: {
+          chats: {
+            members: true,
+          },
+        },
+      });
     return this.accountRepository.findOne({
       where: { email },
     });

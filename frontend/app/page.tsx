@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { startApp } from '@/lib/actions';
+import { startApp } from '@/lib/actions/server-actions';
 
 export default async function App() {
   await startApp();

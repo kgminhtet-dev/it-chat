@@ -1,4 +1,4 @@
-import { IAccount } from "@/lib/types/IAccount";
+import { IAccount } from '@/lib/types/IAccount';
 
 export interface IChat {
   id: string;

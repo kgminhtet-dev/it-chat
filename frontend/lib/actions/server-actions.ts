@@ -20,45 +20,43 @@ export async function getCookie(name: string) {
 }
 
 export async function signin(formdata: any) {
-  const url = process.env.URL;
-  let response_data;
   try {
+    const url = process.env.URL;
     const response = await fetch(`${url}/api/auth/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formdata),
     });
-    response_data = await response.json();
+    const response_data = await response.json();
     if (response.status !== StatusCodes.OK) {
+      cookies().set('access_token', response_data.access_token);
+      cookies().set('account_id', response_data.account.id);
       return response_data;
     }
   } catch (error) {
     redirect(`/error`);
   }
-  cookies().set('access_token', response_data.access_token);
-  cookies().set('account_id', response_data.account_id);
-  redirect(`/${response_data.account_id}`);
+  // redirect(`/${response_data.account_id}`);
 }
 
 export async function signup(formdata: any) {
   const url = process.env.URL;
-  let response_data;
   try {
     const response = await fetch(`${url}/api/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formdata),
     });
-    response_data = await response.json();
+    const response_data = await response.json();
     if (response.status !== StatusCodes.CREATED) {
+      cookies().set('access_token', response_data.access_token);
+      cookies().set('account_id', response_data.account.id);
       return response_data;
     }
   } catch (error) {
     redirect(`/error`);
   }
-  cookies().set('access_token', response_data.access_token);
-  cookies().set('account_id', response_data.account_id);
-  redirect(`/${response_data.account_id}`);
+  // redirect(`/${response_data.account_id}`);
 }
 
 export async function signout() {
@@ -459,4 +457,8 @@ export async function getChat(accountId: string, chatId: string) {
     return data;
   }
   return { error: data.message };
+}
+
+export async function getURL() {
+  return process.env.URL;
 }

@@ -13,7 +13,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useToast } from '@/components/ui/use-toast';
-import { changePassword } from '@/lib/actions';
+import { changePassword } from '@/lib/actions/server-actions';
 import { IProfile } from '@/lib/types/IProfile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';

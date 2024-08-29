@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/components/ui/use-toast';
 import { IAccount } from '@/lib/types/IAccount';
 import { shortName } from '@/lib/utils';
-import { emitChatId } from '@/lib/web-socket-actions';
+import { emitChatId } from '@/lib/actions/web-socket-actions';
 import { useRouter } from 'next/navigation';
 import { Socket } from 'socket.io-client';
 import { IProfile } from '@/lib/types/IProfile';

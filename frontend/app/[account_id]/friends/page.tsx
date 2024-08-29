@@ -1,5 +1,5 @@
 import FriendListItem from '@/components/app-ui/friend-list-item';
-import { getFriends } from '@/lib/actions';
+import { getFriends } from '@/lib/actions/server-actions';
 import { IAccount } from '@/lib/types/IAccount';
 import { ScrollArea } from '@/components/ui/scroll-area';
 

@@ -43,13 +43,13 @@ export class AuthService {
     });
     const payload = { sub: account.id, username: account.username };
     return {
-      account_id: account.id,
+      account: this.transformAccount(account),
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
   async signin(email: string, password: string) {
-    const account = await this.accountRepoService.findByEmail(email);
+    const account = await this.accountRepoService.findByEmail(email, true);
     if (!account) {
       throw new UnauthorizedException(`Incorrect email.`);
     }
@@ -63,33 +63,45 @@ export class AuthService {
 
     const payload = { sub: account.id, username: account.username };
     return {
-      account_id: account.id,
+      account: this.transformAccount(account),
+      chats: this.transformChats(account, account.chats),
       access_token: await this.jwtService.signAsync(payload),
     };
   }
 
-  signout(id: string) {
+  signout() {
     return {
       message: 'Successfully signout.',
     };
   }
 
-  private toRespChats(account: IAccount, chats: IChat[]) {
+  private transformAccount(account: IAccount) {
+    return {
+      id: account.id,
+      fullname: account.fullname,
+      username: '@' + account.username,
+      isDeactivated: account.isDeactivated,
+    };
+  }
+
+  private transformChats(account: IAccount, chats: IChat[]) {
+    if (chats.length === 0) return [];
+
     return chats.map((chat) => {
-      const contact = chat.accounts.filter(
-        (member) => account.username != member.username,
-      )[0];
+      const members = chat.members.map((member) => ({
+        id: member.id,
+        fullname: member.fullname,
+        username: '@' + member.username,
+        isDeactivated: member.isDeactivated,
+      }));
+      const contact = members.filter((member) => account.id !== member.id)[0];
       return {
         id: chat.id,
         name: chat.name,
         lastMessage: chat.lastMessage,
         lastChatTime: chat.lastChatTime,
-        contact: {
-          id: contact.id,
-          username: '@' + contact.username,
-          fullname: contact.fullname,
-          isDeactivated: contact.isDeactivated,
-        },
+        members,
+        contact,
         createdAt: chat.createdAt,
         updatedAt: chat.updatedAt,
       };

@@ -1,4 +1,4 @@
-import { getFriend } from '@/lib/actions';
+import { getFriend } from '@/lib/actions/server-actions';
 import UnfriendButton from '@/components/app-ui/unfriend-button';
 
 export default async function FriendPage(

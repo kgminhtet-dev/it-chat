@@ -21,7 +21,7 @@ import { ChatService } from './services/chat/chat.service';
 export class AppWsGateway {
   @WebSocketServer()
   server: Server;
-  private logger: Logger = new Logger('App WsGateway');
+  private logger: Logger = new Logger('AppWsGateway');
 
   constructor(
     private readonly connList: Map<string, Socket>,

@@ -1,5 +1,5 @@
 import SendFriendRequest from '@/components/app-ui/sent-friend-request';
-import { getFriendRequestPending } from '@/lib/actions';
+import { getFriendRequestPending } from '@/lib/actions/server-actions';
 import { IFriendRequest } from '@/lib/types/IFriendRequest';
 import { ScrollArea } from '@/components/ui/scroll-area';
 

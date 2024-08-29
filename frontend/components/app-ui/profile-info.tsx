@@ -1,5 +1,5 @@
 import PersonalInto from '@/components/app-ui/personal-info';
-import { updateAccount } from '@/lib/actions';
+import { updateAccount } from '@/lib/actions/server-actions';
 import { IProfile } from '@/lib/types/IProfile';
 
 interface Props {

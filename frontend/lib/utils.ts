@@ -28,3 +28,4 @@ export function formatDateToTimeString(date: Date) {
 
   return h + ':' + m + ' ' + ampm;
 }
+

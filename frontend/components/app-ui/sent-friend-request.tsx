@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { useToast } from '@/components/ui/use-toast';
-import { cancelFriendRequest } from '@/lib/actions';
+import { cancelFriendRequest } from '@/lib/actions/server-actions';
 import { IFriendRequest } from '@/lib/types/IFriendRequest';
 import { shortName } from '@/lib/utils';
 import { Cross2Icon } from '@radix-ui/react-icons';

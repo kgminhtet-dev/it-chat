@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { sendFriendRequest } from '@/lib/actions';
+import { sendFriendRequest } from '@/lib/actions/server-actions';
 import { useState } from 'react';
 
 export default function AddFriendsPage(

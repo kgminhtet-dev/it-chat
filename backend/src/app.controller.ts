@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -52,15 +53,20 @@ export class AppController {
 
   @UseGuards(AuthGuard)
   @Get()
-  async signout(@Req() request: Request & { payload: IPayload }) {
-    return this.authService.signout(request.payload.username);
+  async signout() {
+    return this.authService.signout();
   }
 
   // api/accounts/:accountId
   @UseGuards(AuthGuard)
   @Get('accounts/:accountId')
-  async getAccount(@Req() request: Request & { payload: IPayload }) {
-    return this.userService.getAccount(request.payload.sub);
+  async getAccount(
+    @Req() request: Request & { payload: IPayload },
+    @Query('include') include: string,
+  ) {
+    // if (include !== 'chats')
+    // return this.userService.getAccount(request.payload.sub);
+    return this.userService.getAccountIncludedChats(request.payload.sub);
   }
 
   // api/accounts/:accountId/chats

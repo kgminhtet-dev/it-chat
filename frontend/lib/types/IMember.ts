@@ -1,7 +1,6 @@
-export interface IProfile {
+export interface IMember {
   id: string;
   fullname: string;
   username: string;
-  email: string;
   isDeactivated: boolean;
 }

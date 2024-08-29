@@ -1,4 +1,4 @@
-import { getAccount } from '@/lib/actions';
+import { getAccount } from '@/lib/actions/server-actions';
 import ProfileInfo from '@/components/app-ui/profile-info';
 import CoverPhoto from '@/components/app-ui/cover-photo';
 import PasswordButton from '@/components/app-ui/password-button';

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { UserMinus } from 'lucide-react';
-import { unFriend } from '@/lib/actions';
+import { unFriend } from '@/lib/actions/server-actions';
 
 interface Props {
   accountId: string;

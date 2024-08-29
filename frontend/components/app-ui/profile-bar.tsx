@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { shortName } from '@/lib/utils';
 import Link from 'next/link';
-import { IProfile } from '@/lib/types/IProfile';
+import { IAccount } from '@/lib/types/IAccount';
 
 interface Props {
-  account: IProfile;
+  account: IAccount;
 }
 
 export default function ProfileBar({ account }: Props) {

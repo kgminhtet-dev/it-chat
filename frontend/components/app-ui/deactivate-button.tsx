@@ -11,10 +11,10 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
-import { deactivateAccount } from '@/lib/actions';
+import { deactivateAccount } from '@/lib/actions/server-actions';
 import useAppStore from '@/components/hooks/use-app-store';
 import { IProfile } from '@/lib/types/IProfile';
-import { emitDeactivate } from '@/lib/web-socket-actions';
+import { emitDeactivate } from '@/lib/actions/web-socket-actions';
 import { Socket } from 'socket.io-client';
 
 interface Props {

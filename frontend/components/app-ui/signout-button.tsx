@@ -12,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { signout } from '@/lib/actions';
+import { signout } from '@/lib/actions/server-actions';
 import useAppStore from '@/components/hooks/use-app-store';
 
 export default function SignoutButton() {

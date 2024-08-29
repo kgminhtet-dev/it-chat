@@ -1,12 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { IChat } from '@/lib/types/IChat';
-import { formatDateToTimeString, shortName } from '@/lib/utils';
-import Link from 'next/link';
-
-interface Props {
-  accountId: string;
-  chat: IChat;
-}
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IChat } from "@/lib/types/IChat";
+import { formatDateToTimeString, shortName } from "@/lib/utils";
+import Link from "next/link";
 
 interface Props {
   accountId: string;
@@ -17,7 +12,9 @@ export default function ChatListItem({ accountId, chat }: Props) {
   return (
     <Link
       href={`/${accountId}/chat/${chat.id}`}
-      className={'flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors'}
+      className={
+        "flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors"
+      }
     >
       <Avatar className="h-10 w-10 text-blue-500">
         <AvatarImage src="" />
