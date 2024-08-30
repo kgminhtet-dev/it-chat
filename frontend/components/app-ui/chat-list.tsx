@@ -3,11 +3,9 @@
 import ChatListItem from "@/components/app-ui/chat-list-item";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { IAccount } from "@/lib/types/IAccount";
 import useAppStore from "../hooks/use-app-store";
 
 export default function ChatList() {
-  const account = useAppStore((state) => state.account) as IAccount;
   const chats = useAppStore((state) => state.chats);
 
   return (
@@ -16,7 +14,7 @@ export default function ChatList() {
         <ScrollArea className={"h-full"}>
           {chats.map((chat, index) => (
             <div key={index}>
-              <ChatListItem chat={chat} accountId={account.id} />
+              <ChatListItem chat={chat} />
               <Separator className={"my-1"} />
             </div>
           ))}

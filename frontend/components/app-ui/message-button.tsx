@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { MessageCircle } from 'lucide-react';
-import useAppStore from '@/components/hooks/use-app-store';
-import { alreadyChats, getMessages } from '@/lib/actions/server-actions';
-import { IProfile } from '@/lib/types/IProfile';
-import { useRouter } from 'next/navigation';
-import { getChat } from '@/lib/actions/web-socket-actions';
-import { Socket } from 'socket.io-client';
+import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
+import useAppStore from "@/components/hooks/use-app-store";
+import alreadyChats, { getMessages } from "@/lib/actions/server-actions";
+import { IProfile } from "@/lib/types/IProfile";
+import { useRouter } from "next/navigation";
+import { getChat } from "@/lib/actions/web-socket-actions";
+import { Socket } from "socket.io-client";
 
 export default function MessageButton({ to }: { to: string }) {
   const router = useRouter();
@@ -18,8 +18,8 @@ export default function MessageButton({ to }: { to: string }) {
 
   return (
     <Button
-      variant={'default'}
-      size={'icon'}
+      variant={"default"}
+      size={"icon"}
       onClick={async () => {
         const chat = await alreadyChats(chats, to);
         if (chat) {
@@ -31,7 +31,7 @@ export default function MessageButton({ to }: { to: string }) {
             participants: [profile.username, to],
           });
         }
-        router.push('/chat');
+        router.push("/chat");
       }}
     >
       <MessageCircle className="h-6 w-6" />

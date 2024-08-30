@@ -11,7 +11,6 @@ export interface MessagesSlice {
 
 const createMessageSlice: StateCreator<MessagesSlice> = (set) => ({
   messages: [],
-  currentChat: undefined,
 
   setMessages: (messages: IMessage[]) =>
     set({ messages }),

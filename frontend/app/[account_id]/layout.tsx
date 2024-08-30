@@ -21,7 +21,7 @@ export default function AccountLayout({
 
   return (
     <main className={"w-screen h-screen grid grid-flow-col grid-cols-4"}>
-      <Websocket token={token} />
+      <Websocket />
       <AppNav account={account} />
       <div className={"h-screen col-span-3 overflow-auto"}>
         {children}

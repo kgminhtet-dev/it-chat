@@ -59,6 +59,13 @@ export class AppController {
 
   // api/accounts/:accountId
   @UseGuards(AuthGuard)
+  @Get('accounts')
+  async searchUsername(@Query('username') username: string) {
+    if (username) return this.userService.search(username);
+  }
+
+  // api/accounts/:accountId
+  @UseGuards(AuthGuard)
   @Get('accounts/:accountId')
   async getAccount(
     @Req() request: Request & { payload: IPayload },
@@ -126,6 +133,24 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('/accounts/:accountId/friends/:friendId')
+  async getFriend(
+    @Param('friendId') friendId: string,
+    @Req() request: Request & { payload: IPayload },
+  ) {
+    return this.userService.getFriend(request.payload.sub, friendId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete('/accounts/:accountId/friends/:friendId')
+  async removeFriend(
+    @Req() request: Request & { payload: IPayload },
+    @Param('friendId') friendId: string,
+  ) {
+    return this.userService.removeFriend(request.payload.sub, friendId);
+  }
+
+  @UseGuards(AuthGuard)
   @Get('accounts/:accountId/friend-requests/pendings')
   async getFriendRequestPendings(
     @Req() request: Request & { payload: IPayload },
@@ -167,23 +192,5 @@ export class AppController {
       default:
         throw new BadRequestException(`Invalid method name ${requestName}`);
     }
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('/accounts/:accountId/friends/:friendId')
-  async getFriend(
-    @Param('friendId') friendId: string,
-    @Req() request: Request & { payload: IPayload },
-  ) {
-    return this.userService.getFriend(request.payload.sub, friendId);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete('/accounts/:accountId/friends/:friendId')
-  async removeFriend(
-    @Req() request: Request & { payload: IPayload },
-    @Param('friendId') friendId: string,
-  ) {
-    return this.userService.removeFriend(request.payload.sub, friendId);
   }
 }

@@ -107,8 +107,10 @@ export class UserProfileService {
     const account = await this.accountRepoService.findByUsername(
       username.slice(1),
     );
+
     if (!account || account.isDeactivated)
       throw new NotFoundException(`User not found.`);
+    
     return {
       id: account.id,
       fullname: account.fullname,

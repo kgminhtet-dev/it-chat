@@ -4,8 +4,7 @@ import SearchListItem from "@/components/app-ui/search-list-item";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  alreadyChats,
+import alreadyChats, {
   searchChatByName,
   searchUsername,
 } from "@/lib/actions/server-actions";
@@ -16,7 +15,7 @@ import useAppStore from "../hooks/use-app-store";
 
 export default function SearchBar(): JSX.Element {
   const { toast } = useToast();
-  const account = useAppStore((state) => state.account);
+  const account = useAppStore((state) => state.account) as IAccount;
   const chats = useAppStore((state) => state.chats);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState<
@@ -37,10 +36,10 @@ export default function SearchBar(): JSX.Element {
             setSearchTerm(e.target.value);
           }}
           onKeyDown={async (e) => {
-            if (e.key === "Enter" && searchTerm.length > 0) {
-              const name = searchTerm.toLowerCase();
-              if (name[0] === "@") {
-                const chat = await alreadyChats(chats, name);
+            const search = searchTerm.trim();
+            if (e.key === "Enter" && search) {
+              if (search[0] === "@") {
+                const chat = await alreadyChats(chats, search);
                 if (chat) {
                   setSearchResults([
                     {
@@ -50,7 +49,7 @@ export default function SearchBar(): JSX.Element {
                   ]);
                   return;
                 }
-                const username = await searchUsername(name);
+                const username = await searchUsername(search);
                 if (username.error) {
                   toast({
                     variant: "destructive",
@@ -62,13 +61,16 @@ export default function SearchBar(): JSX.Element {
                 if (username) setSearchResults([{ account: username }]);
                 return;
               }
-              const foundChats = await searchChatByName(chats, name);
+              const foundChats = await searchChatByName(
+                chats,
+                search.toLowerCase()
+              );
               if (foundChats)
                 setSearchResults(
                   foundChats.map((chat) => ({
                     account: chat.contact,
                     chatId: chat.id,
-                  })),
+                  }))
                 );
               return;
             }

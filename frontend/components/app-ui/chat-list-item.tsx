@@ -2,27 +2,28 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getMessages } from "@/lib/actions/server-actions";
+import { IAccount } from "@/lib/types/IAccount";
 import { IChat } from "@/lib/types/IChat";
 import { cn, formatDateToTimeString, shortName } from "@/lib/utils";
 import Link from "next/link";
 import useAppStore from "../hooks/use-app-store";
 
 interface Props {
-  accountId: string;
   chat: IChat;
 }
 
-export default function ChatListItem({ accountId, chat }: Props) {
-  const currentChat = useAppStore((state) => state.currentChat);
+export default function ChatListItem({ chat }: Props) {
+  const account = useAppStore((state) => state.account) as IAccount;
+  const currentChat = useAppStore((state) => state.currentChat) as IChat;
   const setMessages = useAppStore((state) => state.setMessages);
   const setCurrentChat = useAppStore((state) => state.setCurrentChat);
 
   return (
     <Link
-      href={`/${accountId}/chats/${chat.id}`}
+      href={`/${account.id}/chats/${chat.id}`}
       onClick={async () => {
         setCurrentChat(chat);
-        const messages = await getMessages(accountId, chat.id);
+        const messages = await getMessages(account.id, chat.id);
         setMessages(messages);
       }}
       className={cn(

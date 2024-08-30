@@ -11,6 +11,7 @@ export default function ConversationPage({
 }: {
   params: { account_id: string; chat_id: string };
 }) {
+  console.log("render conversation page");
   const chat = useAppStore((state) => state.currentChat);
   if (!chat)
     return <FetchChat accountId={params.account_id} chatId={params.chat_id} />;
