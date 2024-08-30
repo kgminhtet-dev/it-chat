@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getMessages } from "@/lib/actions/server-actions";
 import { IChat } from "@/lib/types/IChat";
-import { formatDateToTimeString, shortName } from "@/lib/utils";
+import { cn, formatDateToTimeString, shortName } from "@/lib/utils";
 import Link from "next/link";
 import useAppStore from "../hooks/use-app-store";
 
@@ -13,6 +13,7 @@ interface Props {
 }
 
 export default function ChatListItem({ accountId, chat }: Props) {
+  const currentChat = useAppStore((state) => state.currentChat);
   const setMessages = useAppStore((state) => state.setMessages);
   const setCurrentChat = useAppStore((state) => state.setCurrentChat);
 
@@ -24,9 +25,10 @@ export default function ChatListItem({ accountId, chat }: Props) {
         const messages = await getMessages(accountId, chat.id);
         setMessages(messages);
       }}
-      className={
-        "flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors"
-      }
+      className={cn(
+        "flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors",
+        currentChat?.id === chat.id && " bg-blue-100",
+      )}
     >
       <Avatar className="h-10 w-10 text-blue-500">
         <AvatarImage src="" />

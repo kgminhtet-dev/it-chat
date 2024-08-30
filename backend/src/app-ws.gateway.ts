@@ -91,13 +91,14 @@ export class AppWsGateway {
       id: account.id,
       fullname: account.fullname,
       username: '@' + account.username,
+      isDeactivated: account.isDeactivated,
     }));
 
-    members.forEach((account) => {
-      const socket = this.connList.get(account.id);
+    members.forEach((member) => {
+      const socket = this.connList.get(member.id);
       if (socket) socket.join(chatId);
     });
-
+    await this.chatService.saveMessage(message);
     this.server.to(chatId).emit('new chat', {
       message,
       chat: {
@@ -108,7 +109,6 @@ export class AppWsGateway {
         participants: members,
       },
     });
-    await this.chatService.saveMessage(message);
   }
 
   @SubscribeMessage('message')
@@ -117,7 +117,7 @@ export class AppWsGateway {
     { sender, chatId, content }: MessageEventDto,
   ) {
     const message = this.chatService.createMessage(sender, chatId, content);
-    this.server.to(chatId).emit('message', message);
     await this.chatService.saveMessage(message);
+    this.server.to(chatId).emit('message', message);
   }
 }

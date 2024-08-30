@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IChat } from 'src/types/chat';
 import { Raw, Repository } from 'typeorm';
-import { Message } from '../entities/entities';
+import { IMessage } from '../../../types/message';
 import { AccountRepoService } from '../Account/account-repo.service';
 import { ChatRepoService } from '../Chat/chat-repo.service';
-import { IMessage } from '../../../types/message';
+import { Message } from '../entities/entities';
 
 @Injectable()
 export class MessageRepoService {
@@ -38,18 +39,12 @@ export class MessageRepoService {
     });
   }
 
-  async save(message: IMessage) {
-    const chat = await this.chatRepoService.findById(message.chatId);
-    chat.lastMessage = message.content;
-    chat.lastChatTime = message.createdAt;
-    const account = await this.accountRepoService.findByUsername(
-      message.sender.slice(1),
-    );
-    await this.chatRepoService.update(chat.id, chat);
+  async save(chat: IChat, message: IMessage) {
+    const sender = await this.accountRepoService.findById(message.sender);
     return this.messageRepository.save({
       id: message.id,
       content: message.content,
-      sender: account,
+      sender,
       chat,
       createdAt: message.createdAt,
       updatedAt: message.updatedAt,

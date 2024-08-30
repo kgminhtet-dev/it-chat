@@ -17,7 +17,7 @@ export default function ConversationPage({
 
   return (
     <div className="h-full row-span-12 flex flex-col">
-      <div className={"h-12"}>
+      <div className={"h-12 border-b-2"}>
         <ConversationBar />
       </div>
       <div className={"flex-1 overflow-auto"}>

@@ -99,7 +99,14 @@ export class ChatService {
   }
 
   async saveMessage(message: IMessage) {
-    const savedMessage = await this.messageRepoService.save(message);
+    const chat = await this.chatRepoService.findById(message.chatId);
+    chat.lastMessage = message.content;
+    chat.lastChatTime = message.createdAt;
+    await this.chatRepoService.update(chat.id, {
+      lastMessage: message.content,
+      lastChatTime: message.createdAt,
+    });
+    const savedMessage = await this.messageRepoService.save(chat, message);
     return this.transformMessage(savedMessage);
   }
 }

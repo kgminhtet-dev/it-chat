@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account } from '../entities/entities';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { UpdateAccountDto } from './dto/update-account.dto';
 import { IFindOption } from './dto/find-option';
+import { UpdateAccountDto } from './dto/update-account.dto';
 
 @Injectable()
 export class AccountRepoService {
@@ -26,6 +26,11 @@ export class AccountRepoService {
         relations: {
           chats: {
             members: true,
+          },
+        },
+        order: {
+          chats: {
+            lastChatTime: 'DESC',
           },
         },
       });

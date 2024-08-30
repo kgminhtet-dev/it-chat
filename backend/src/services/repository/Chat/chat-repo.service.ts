@@ -21,6 +21,11 @@ export class ChatRepoService {
         },
         members: true,
       },
+      order: {
+        messages: {
+          createdAt: 'ASC',
+        },
+      },
     });
   }
 
@@ -43,7 +48,7 @@ export class ChatRepoService {
     return this.chatRepository.save(newChat);
   }
 
-  async update(id: string, chat: Chat) {
+  async update(id: string, chat: unknown) {
     return this.chatRepository.update(id, chat);
   }
 }

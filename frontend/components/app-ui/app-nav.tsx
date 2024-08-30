@@ -11,7 +11,7 @@ export default function AppNav({ account }: Props) {
   return (
     <div
       className={
-        "grid grid-flow-row grid-rows-12 col-span-1 border-r overflow-auto"
+        "grid grid-flow-row grid-rows-12 col-span-1 border-r-2 overflow-auto"
       }
     >
       <SearchBar />

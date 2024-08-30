@@ -28,15 +28,15 @@ export async function signin(formdata: any) {
       body: JSON.stringify(formdata),
     });
     const response_data = await response.json();
-    if (response.status !== StatusCodes.OK) {
+    if (response.status === StatusCodes.OK) {
       cookies().set("access_token", response_data.access_token);
       cookies().set("account_id", response_data.account.id);
       return response_data;
     }
+    return { error: response_data.message };
   } catch (error) {
     redirect(`/error`);
   }
-  // redirect(`/${response_data.account_id}`);
 }
 
 export async function signup(formdata: any) {
@@ -48,15 +48,15 @@ export async function signup(formdata: any) {
       body: JSON.stringify(formdata),
     });
     const response_data = await response.json();
-    if (response.status !== StatusCodes.CREATED) {
+    if (response.status === StatusCodes.CREATED) {
       cookies().set("access_token", response_data.access_token);
       cookies().set("account_id", response_data.account.id);
       return response_data;
     }
+    return { error: response_data.message };
   } catch (error) {
     redirect(`/error`);
   }
-  // redirect(`/${response_data.account_id}`);
 }
 
 export async function signout() {
