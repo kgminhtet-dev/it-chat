@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useInView } from "react-intersection-observer";
-import ReceiveMessage from "@/components/app-ui/receive-message";
-import SentMessage from "@/components/app-ui/send-message";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { IAccount } from "@/lib/types/IAccount";
-import useAppStore from "../hooks/use-app-store";
-import { IChat } from "@/lib/types/IChat";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useInView } from 'react-intersection-observer';
+import ReceiveMessage from '@/components/app-ui/receive-message';
+import SentMessage from '@/components/app-ui/send-message';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { IAccount } from '@/lib/types/IAccount';
+import useAppStore from '../hooks/use-app-store';
+import { IChat } from '@/lib/types/IChat';
+import { useEffect } from 'react';
 
 export default function MessageList() {
   const messages = useAppStore((state) => state.messages);
@@ -21,12 +21,12 @@ export default function MessageList() {
 
   useEffect(() => {
     if (!inView) {
-      entry?.target?.scrollIntoView({ behavior: "smooth" });
+      entry?.target?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, entry, inView]);
 
   return (
-    <ScrollArea className={"w-full h-full p-2"}>
+    <ScrollArea className={'h-full p-2'}>
       {messages.length > 0 &&
         messages.map((message, index) =>
           message.sender === account.id ? (
@@ -41,7 +41,7 @@ export default function MessageList() {
               sender={chat.contact}
               message={message}
             />
-          )
+          ),
         )}
       <div ref={scrollRef} />
     </ScrollArea>

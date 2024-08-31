@@ -1,10 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { formatDateToTimeString, shortName } from '@/lib/utils';
 import { IMessage } from '@/lib/types/IMessage';
-import { IAccount } from '@/lib/types/IAccount';
+import { IMember } from '@/lib/types/IMember';
 
 interface Props {
-  sender: IAccount;
+  sender: IMember;
   message: IMessage;
 }
 

@@ -26,7 +26,7 @@ export default function SearchBar(): JSX.Element {
 
   return (
     <>
-      <div className="relative row-span-1 flex items-center rounded-md bg-background px-1 shadow-sm">
+      <div className="relative row-span-1 flex items-center p-1 border-r-2">
         <Input
           type="search"
           placeholder="Search chats or start conversation..."
@@ -75,7 +75,6 @@ export default function SearchBar(): JSX.Element {
             }
             setSearchResults([]);
           }}
-          className="pr-8"
         />
         <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
       </div>

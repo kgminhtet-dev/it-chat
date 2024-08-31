@@ -16,7 +16,7 @@ export default function MessageInput() {
   const [message, setMessage] = useState('');
 
   return (
-    <div className="bg-muted p-1 flex items-center bg-gray-300">
+    <div className="h-full bg-muted p-1 flex items-center bg-gray-300">
       <Input
         id="message"
         name={'message'}
