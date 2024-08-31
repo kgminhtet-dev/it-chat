@@ -12,12 +12,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import * as z from 'zod';
 import { useToast } from '@/components/ui/use-toast';
 import { changePassword } from '@/lib/actions/server-actions';
-import { IProfile } from '@/lib/types/IProfile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { IAccount } from '@/lib/types/IAccount';
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(8, 'Password must be at least 8 characters'),
@@ -26,7 +26,7 @@ const passwordSchema = z.object({
 });
 
 interface Props {
-  account: IProfile;
+  account: IAccount;
 }
 
 export default function PasswordButton({ account }: Props) {
@@ -71,8 +71,8 @@ export default function PasswordButton({ account }: Props) {
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          variant="default"
-          className={'w-max bg-green-600 hover:bg-white hover:text-green-500'}
+          variant="outline"
+          className={'text-green-600 hover:bg-green-600 hover:text-white'}
         >
           Change Password
         </Button>

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,16 +9,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
-import { IProfile } from "@/lib/types/IProfile";
-import { EditIcon } from "lucide-react";
-import { useState } from "react";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { EditIcon } from 'lucide-react';
+import { useState } from 'react';
+import { IAccount } from '@/lib/types/IAccount';
 
 interface PersonalInfo {
-  type: "fullname" | "email" | "username";
-  account: IProfile;
+  type: 'fullname' | 'email' | 'username';
+  account: IAccount;
   fn: Function;
 }
 
@@ -29,7 +29,7 @@ export default function PersonalInto({ type, account, fn }: PersonalInfo) {
   return (
     <div
       className={
-        "bg-gray-100 flex flex-row p-2 w-full border-b justify-between items-center rounded-md shadow-sm"
+        'bg-gray-100 flex flex-row p-2 w-full border-b justify-between items-center rounded-md shadow-sm'
       }
     >
       <p>{account[type]}</p>
@@ -57,28 +57,28 @@ export default function PersonalInto({ type, account, fn }: PersonalInfo) {
             <Button
               onClick={async () => {
                 const newInfo = userInfo.trim();
-                console.log("changed ", newInfo);
-                if (type === "fullname" && account.fullname === newInfo) {
+                console.log('changed ', newInfo);
+                if (type === 'fullname' && account.fullname === newInfo) {
                   toast({
-                    variant: "destructive",
+                    variant: 'destructive',
                     title:
-                      "Can't change because name you changed is matched with current name.",
+                      'Can\'t change because name you changed is matched with current name.',
                   });
                   return;
                 }
-                if (type === "email" && account.email === newInfo) {
+                if (type === 'email' && account.email === newInfo) {
                   toast({
-                    variant: "destructive",
+                    variant: 'destructive',
                     title:
-                      "Can't change because email you changed is matched with current email.",
+                      'Can\'t change because email you changed is matched with current email.',
                   });
                   return;
                 }
-                if (type === "username" && account.username === newInfo) {
+                if (type === 'username' && account.username === newInfo) {
                   toast({
-                    variant: "destructive",
+                    variant: 'destructive',
                     title:
-                      "Can't change because username you changed is matched with current username.",
+                      'Can\'t change because username you changed is matched with current username.',
                   });
                   return;
                 }
@@ -90,7 +90,7 @@ export default function PersonalInto({ type, account, fn }: PersonalInfo) {
                     });
                   } else {
                     toast({
-                      variant: "destructive",
+                      variant: 'destructive',
                       title: data.error,
                     });
                   }

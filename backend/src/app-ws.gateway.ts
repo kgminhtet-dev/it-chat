@@ -122,7 +122,7 @@ export class AppWsGateway {
     const message = this.chatService.createMessage(sender, chatId, content);
     const { error } = await this.chatService.saveMessage(message);
     if (error) {
-      this.server.to(chatId).emit('error', error);
+      this.server.to(chatId).emit('error', { message: error });
     } else {
       this.server.to(chatId).emit('message', message);
     }

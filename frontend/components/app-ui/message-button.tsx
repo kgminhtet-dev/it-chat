@@ -1,37 +1,46 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
-import useAppStore from "@/components/hooks/use-app-store";
-import alreadyChats, { getMessages } from "@/lib/actions/server-actions";
-import { IProfile } from "@/lib/types/IProfile";
-import { useRouter } from "next/navigation";
-import { getChat } from "@/lib/actions/web-socket-actions";
-import { Socket } from "socket.io-client";
+import { Button } from '@/components/ui/button';
+import { MessageCircle } from 'lucide-react';
+import useAppStore from '@/components/hooks/use-app-store';
+import alreadyChats, { getChat } from '@/lib/actions/server-actions';
+import { useRouter } from 'next/navigation';
+import { Socket } from 'socket.io-client';
+import { IAccount } from '@/lib/types/IAccount';
+import { emitChatId } from '@/lib/actions/web-socket-actions';
+import { useToast } from '@/components/ui/use-toast';
 
-export default function MessageButton({ to }: { to: string }) {
+export default function MessageButton({ friend }: { friend: IAccount }) {
+  const { toast } = useToast();
   const router = useRouter();
   const setMessages = useAppStore((state) => state.setMessages);
+  const setCurrentChat = useAppStore((state) => state.setCurrentChat);
   const chats = useAppStore((state) => state.chats);
-  const profile = useAppStore((state) => state.profile) as IProfile;
+  const account = useAppStore((state) => state.account) as IAccount;
   const socket = useAppStore((state) => state.socket) as Socket;
 
   return (
     <Button
-      variant={"default"}
-      size={"icon"}
+      variant={'default'}
+      size={'icon'}
       onClick={async () => {
-        const chat = await alreadyChats(chats, to);
+        const chat = await alreadyChats(chats, friend.username);
         if (chat) {
-          const messages = await getMessages(profile.id, chat.id);
-          setMessages(messages, chat);
+          const data = await getChat(account.id, chat.id);
+          if (data.error)
+            return toast({
+              variant: 'destructive',
+              title: data.error,
+            });
+          setCurrentChat(data.chat);
+          setMessages(data.messages);
         } else {
-          getChat(socket, {
-            sender: profile.username,
-            participants: [profile.username, to],
+          emitChatId(socket, {
+            senderId: account.id,
+            receiverId: friend.id,
           });
         }
-        router.push("/chat");
+        router.push(`/${account.id}/chats`);
       }}
     >
       <MessageCircle className="h-6 w-6" />
