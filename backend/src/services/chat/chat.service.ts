@@ -71,6 +71,8 @@ export class ChatService {
 
   async getChatOf(accountId: string, chatId: string) {
     const chat = await this.chatRepoService.findById(chatId);
+    if (!chat) return { chat: null, message: [] };
+
     const messages = chat.messages;
     return {
       chat: this.transformChat(accountId, chat),

@@ -117,7 +117,7 @@ export class UserProfileService {
     return {
       id: account.id,
       fullname: account.fullname,
-      username: account.username,
+      username: '@' + account.username,
     };
   }
 
@@ -296,7 +296,7 @@ export class UserProfileService {
       throw new BadRequestException("Can't add yourself.");
 
     const receiver = await this.accountRepoService.findByUsername(receiverName);
-    if (!receiver) throw new NotFoundException('Invalid username.');
+    if (!receiver) throw new NotFoundException('Username not found.');
 
     const isFriend = sender.friends.find(
       (friend) => friend.username === receiverName,

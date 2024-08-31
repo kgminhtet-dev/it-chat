@@ -44,36 +44,31 @@ export default function SearchListItem({
 
         if (!chat) {
           const alreadyChat = await alreadyChats(chats, foundUser.username);
-
           if (alreadyChat) {
             const data = await getChat(account.id, alreadyChat.id);
-            if (data.error)
-              return toast({
-                variant: 'destructive',
-                title: data.error,
-              });
-            setCurrentChat(data.chat);
-            setMessages(data.messages);
+            if (data.chat) {
+              setCurrentChat(data.chat);
+              setMessages(data.messages);
+            } else {
+              setCurrentChat(alreadyChat);
+              setMessages([]);
+            }
           } else {
             emitChatId(socket, {
               senderId: account.id,
               receiverId: foundUser.id,
             });
           }
-
           clearSearchTerm('');
           router.push(`/${account.id}/chats`);
           return;
         }
 
         const data = await getChat(account.id, chat.id);
-        if (data.error)
-          return toast({
-            variant: 'destructive',
-            title: data.error,
-          });
-        setCurrentChat(data.chat);
-        setMessages(data.messages);
+        if (data.chat) {
+          setCurrentChat(data.chat);
+          setMessages(data.messages);
+        }
         clearSearchTerm('');
         router.push(`/${account.id}/chats`);
       }}

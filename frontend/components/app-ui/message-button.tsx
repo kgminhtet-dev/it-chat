@@ -21,19 +21,20 @@ export default function MessageButton({ friend }: { friend: IAccount }) {
 
   return (
     <Button
-      variant={'default'}
+      variant={'outline'}
       size={'icon'}
+      className={'text-blue-600 hover:text-blue-500'}
       onClick={async () => {
         const chat = await alreadyChats(chats, friend.username);
         if (chat) {
           const data = await getChat(account.id, chat.id);
-          if (data.error)
-            return toast({
-              variant: 'destructive',
-              title: data.error,
-            });
-          setCurrentChat(data.chat);
-          setMessages(data.messages);
+          if (data.chat) {
+            setCurrentChat(data.chat);
+            setMessages(data.messages);
+          } else {
+            setCurrentChat(chat);
+            setMessages([]);
+          }
         } else {
           emitChatId(socket, {
             senderId: account.id,

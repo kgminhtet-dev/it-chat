@@ -1,11 +1,13 @@
 import { getFriend } from '@/lib/actions/server-actions';
 import UnfriendButton from '@/components/app-ui/unfriend-button';
+import MessageButton from '@/components/app-ui/message-button';
 
 export default async function FriendPage(
   { params }: { params: { account_id: string; friend_id: string } },
 ) {
   const { error, friend } = await getFriend(params.account_id, params.friend_id);
-  if (error) return <div>Error Found</div>;
+  if (error) return <div className={'w-full h-full flex justify-center items-center text-2x font-bold'}>Error
+    Found</div>;
 
   return (
     <main className="w-full h-full flex justify-center pt-10">
@@ -15,7 +17,10 @@ export default async function FriendPage(
         </div>
         <p className={'text-2xl font-bold'}>{friend.fullname}</p>
         <p className={'text-muted-foreground'}>{friend.username}</p>
-        <UnfriendButton accountId={params.account_id} friendId={params.friend_id} />
+        <div className="flex gap-1 items-center justify-center">
+          <UnfriendButton accountId={params.account_id} friendId={params.friend_id} />
+          <MessageButton friend={friend} />
+        </div>
       </div>
     </main>
   );

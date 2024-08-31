@@ -228,9 +228,7 @@ export async function changePassword(accountId: string, formdata: any) {
 }
 
 export default async function alreadyChats(chats: IChat[], username: string) {
-  return chats.filter((chat) =>
-    chat.contact.username.toLowerCase().includes(username),
-  )[0];
+  return chats.find((chat) => chat.contact.username === username);
 }
 
 export async function getFriends(accountId: string) {
