@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { AccountRepoService } from '../Account/account-repo.service';
 import { Chat } from '../entities/entities';
 
@@ -33,7 +33,7 @@ export class ChatRepoService {
     const account = await this.accountRepoService.findById(accountId, {
       chats: true,
     });
-    return account.chats.map((chat: Chat) => ({ id: chat.id }));
+    return account.chats.map((chat: Chat) => chat.id);
   }
 
   async create(id: string, members: string[], name = '') {
@@ -49,5 +49,14 @@ export class ChatRepoService {
 
   async update(id: string, chat: unknown) {
     return this.chatRepository.update(id, chat);
+  }
+
+  async updateIsActive(ids: string[], isActive: boolean) {
+    return this.chatRepository.update(
+      {
+        id: In(ids),
+      },
+      { isActive },
+    );
   }
 }

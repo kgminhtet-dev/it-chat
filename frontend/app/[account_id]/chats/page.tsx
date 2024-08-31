@@ -27,7 +27,13 @@ export default function ConversationPage() {
         <MessageList />
       </div>
       <div className={'row-span-1'}>
-        <MessageInput />
+        {
+          currentChat.isActive
+            ? <MessageInput />
+            : <div className={'h-full flex justify-start items-center text-sm text-muted-foreground border'}>
+              This person is not available on ITChat.
+            </div>
+        }
       </div>
     </div>
   );

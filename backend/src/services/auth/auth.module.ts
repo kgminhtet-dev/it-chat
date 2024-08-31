@@ -6,10 +6,12 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { AuthWsGuard } from './auth-ws.guard';
+import { UserProfileModule } from '../user-profile/user-profile.module';
 
 @Module({
   imports: [
     RepositoryModule,
+    UserProfileModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

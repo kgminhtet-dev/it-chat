@@ -93,7 +93,7 @@ export async function getAccount(accountId: string, chats = true) {
       redirect('/signin');
     }
   } catch (error) {
-    redirect('/error');
+    redirect('/signin');
   }
 }
 
@@ -196,21 +196,16 @@ export async function updateAccount(
 export async function deactivateAccount(accountId: string) {
   const token = await getCookie('access_token');
   const url = process.env.URL;
-  const response = await fetch(`${url}/api/accounts/${accountId}/actions`, {
-    method: 'POST',
+  const response = await fetch(`${url}/api/accounts/${accountId}?action=deactivate`, {
     headers: {
-      'Content-Type': 'application/json',
       Authorization: `Bearer ${token?.value}`,
     },
-    body: JSON.stringify({
-      action: 'deactivate',
-    }),
   });
   const data = await response.json();
   if (response.status === StatusCodes.OK) {
-    return { message: data.message };
+    redirect('/signin');
   }
-  return { error: data.message };
+  return redirect('/error');
 }
 
 export async function changePassword(accountId: string, formdata: any) {

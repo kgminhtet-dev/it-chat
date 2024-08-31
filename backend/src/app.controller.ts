@@ -15,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { AppService } from './app.service';
-import { ActionDto } from './dto/action.dto';
 import { FriendRequestDto } from './dto/friend-request.dto';
 import { SigninDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -70,10 +69,16 @@ export class AppController {
   async getAccount(
     @Req() request: Request & { payload: IPayload },
     @Query('include') include: string,
+    @Query('action') action: string,
   ) {
-    if (include !== 'chats')
-      return this.userService.getAccount(request.payload.sub);
-    return this.userService.getAccountIncludedChats(request.payload.sub);
+    console.log('action is ', action);
+    const accountId = request.payload.sub;
+    if (include && include === 'chats')
+      return this.userService.getAccountIncludedChats(accountId);
+
+    if (action === 'deactivate') return this.userService.deactivate(accountId);
+
+    return this.userService.getAccount(accountId);
   }
 
   // api/accounts/:accountId/chats
@@ -100,21 +105,6 @@ export class AppController {
     @Req() request: Request & { payload: IPayload },
   ) {
     return this.userService.update(request.payload.sub, data);
-  }
-
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @Post('accounts/:accountId/actions')
-  async handleActions(
-    @Body() { action }: ActionDto,
-    @Req() request: Request & { payload: IPayload },
-  ) {
-    switch (action) {
-      case 'deactivate':
-        return this.userService.deactivate(request.payload.sub);
-      default:
-        throw new BadRequestException(`${action} is invalid method name.`);
-    }
   }
 
   @UseGuards(AuthGuard)

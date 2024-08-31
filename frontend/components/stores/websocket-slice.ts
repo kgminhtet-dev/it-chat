@@ -35,7 +35,6 @@ const createWebSocketSlice: StateCreator<
       get().handleMessageEvent(message),
     );
     socket?.on('chat id', (chat: IChat) => {
-      console.log('sockect on chat id ', chat);
       get().handleChatIdEvent(chat);
     });
     socket?.on('new chat', (payload) => get().handleNewChatEvent(payload));

@@ -91,6 +91,9 @@ export class Chat {
   @Column({ type: 'varchar', length: 255, default: '' })
   name: string;
 
+  @Column({ type: 'boolean', default: true })
+  isActive: boolean;
+
   @Column({ type: 'varchar', length: 255, default: '' })
   lastMessage: string;
 

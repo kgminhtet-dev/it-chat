@@ -41,10 +41,11 @@ export class AppWsGateway {
       this.server.emit('error', { message: 'Invalid token' });
       return client.disconnect();
     }
+    client.data.accountId = accountId;
     this.connList.set(accountId, client);
     try {
       const chatIds = await this.chatService.getChatIdListOf(accountId);
-      chatIds.forEach((room) => client.join(room.id));
+      chatIds.forEach((room) => client.join(room));
       this.logger.log(`Client connected: ${client.id}`);
     } catch (error) {
       this.logger.error(error);
@@ -56,7 +57,7 @@ export class AppWsGateway {
   async handleDisconnect(client: Socket) {
     const accountId = client.handshake.query.id as string;
     const chatIds = await this.chatService.getChatIdListOf(accountId);
-    chatIds.forEach((room) => client.leave(room.id));
+    chatIds.forEach((room) => client.leave(room));
     this.connList.delete(accountId);
     this.logger.log(`Client disconnected: ${client.id} and ${accountId}`);
   }
@@ -75,6 +76,7 @@ export class AppWsGateway {
     senderConn.join(chatId);
     this.server.to(chatId).emit('chat id', {
       id: chatId,
+      isActive: true,
       contact: accounts.filter((account) => account.id !== senderId)[0],
       participants: accounts,
     });
@@ -103,6 +105,7 @@ export class AppWsGateway {
       message,
       chat: {
         id: chat.id,
+        isActive: chat.isActive,
         lastMessage: message.content,
         lastChatTime: message.createdAt,
         name: chat.name,
@@ -117,7 +120,11 @@ export class AppWsGateway {
     { sender, chatId, content }: MessageEventDto,
   ) {
     const message = this.chatService.createMessage(sender, chatId, content);
-    await this.chatService.saveMessage(message);
-    this.server.to(chatId).emit('message', message);
+    const { error } = await this.chatService.saveMessage(message);
+    if (error) {
+      this.server.to(chatId).emit('error', error);
+    } else {
+      this.server.to(chatId).emit('message', message);
+    }
   }
 }

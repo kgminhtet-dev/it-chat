@@ -10,21 +10,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useRouter } from 'next/navigation';
 import { deactivateAccount } from '@/lib/actions/server-actions';
-import useAppStore from '@/components/hooks/use-app-store';
-import { IProfile } from '@/lib/types/IProfile';
-import { emitDeactivate } from '@/lib/actions/web-socket-actions';
-import { Socket } from 'socket.io-client';
+import { IAccount } from '@/lib/types/IAccount';
 
 interface Props {
-  account: IProfile;
+  account: IAccount;
 }
 
-export default function DeactivateButton({ account }: Props) {
-  const router = useRouter();
-  const socket = useAppStore((state) => state.socket) as Socket;
-
+export default function DeactivateButton({ account }: Props): JSX.Element {
   return (
     <div className={'row-span-1 flex justify-between items-center p-1 shadow-sm'}>
       <p>Deactivating your account means you can recover it at any time after taking this action.</p>
@@ -42,9 +35,7 @@ export default function DeactivateButton({ account }: Props) {
           <DialogFooter>
             <Button variant={'outline'} type="submit">No</Button>
             <Button type="submit" onClick={async () => {
-              emitDeactivate(socket);
               await deactivateAccount(account.id);
-              router.push('/signin');
             }}>Yes</Button>
           </DialogFooter>
         </DialogContent>

@@ -9,11 +9,13 @@ import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { SignupDto } from './dto/signup.dto';
 import { IChat } from '../../types/chat';
 import { IAccount } from '../../types/account';
+import { UserProfileService } from '../user-profile/user-profile.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly accountRepoService: AccountRepoService,
+    private readonly userService: UserProfileService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -59,7 +61,9 @@ export class AuthService {
       throw new UnauthorizedException(`Incorrect password.`);
     }
 
-    if (account.isDeactivated) this.accountRepoService.activate(account.id);
+    if (account.isDeactivated) {
+      await this.userService.activate(account.id);
+    }
 
     const payload = { sub: account.id, username: account.username };
     return {

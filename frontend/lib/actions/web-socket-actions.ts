@@ -1,4 +1,4 @@
-import { Socket } from "socket.io-client";
+import { Socket } from 'socket.io-client';
 
 interface SendMessageDto {
   chatId: string;
@@ -6,18 +6,14 @@ interface SendMessageDto {
   content: string;
 }
 
-export function emitDeactivate(socket: Socket) {
-  socket.emit("deactivate");
-}
-
 export function emitMessage(socket: Socket, data: SendMessageDto) {
-  socket.emit("message", data);
+  socket.emit('message', data);
 }
 
 export function emitChatId(socket: Socket, data: any) {
-  socket.emit("chat id", data);
+  socket.emit('chat id', data);
 }
 
 export function emitNewChat(socket: Socket, data: any) {
-  socket.emit("new chat", data);
+  socket.emit('new chat', data);
 }

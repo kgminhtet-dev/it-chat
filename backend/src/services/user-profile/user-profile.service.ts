@@ -12,12 +12,14 @@ import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { IChangePassword } from '../repository/Account/dto/change-password';
 import { FriendRequestRepoService } from '../repository/FriendRequest/friendRequest-repo.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class UserProfileService {
   constructor(
     private readonly accountRepoService: AccountRepoService,
     private readonly friendRequestRepoService: FriendRequestRepoService,
+    private readonly chatService: ChatService,
   ) {}
 
   private transformAccount(account: IAccount, email = false) {
@@ -52,6 +54,7 @@ export class UserProfileService {
       return {
         id: chat.id,
         name: chat.name,
+        isActive: chat.isActive,
         lastMessage: chat.lastMessage,
         lastChatTime: chat.lastChatTime,
         members,
@@ -110,7 +113,7 @@ export class UserProfileService {
 
     if (!account || account.isDeactivated)
       throw new NotFoundException(`User not found.`);
-    
+
     return {
       id: account.id,
       fullname: account.fullname,
@@ -258,18 +261,29 @@ export class UserProfileService {
   }
 
   async deactivate(id: string) {
-    const account = await this.accountRepoService.findById(id);
-    if (account.isDeactivated)
-      throw new BadRequestException('Account is already deactivated.');
-
     const deactivateResult = await this.accountRepoService.deactivate(id);
 
     if (deactivateResult.affected === 0)
       throw new InternalServerErrorException('Something went wrong.');
 
+    const ok = await this.chatService.updateIsActive(id, false);
+    if (!ok) throw new InternalServerErrorException('Something went wrong.');
+
     return {
-      message: `${account.fullname} is deactivated successfully.`,
+      message: 'Successfully deactivated.',
     };
+  }
+
+  async activate(id: string) {
+    const activateResult = await this.accountRepoService.activate(id);
+
+    if (activateResult.affected === 0)
+      throw new InternalServerErrorException('Something went wrong.');
+
+    const ok = await this.chatService.updateIsActive(id, true);
+    if (!ok) throw new InternalServerErrorException('Something went wrong.');
+
+    return { message: 'Successfully activated.' };
   }
 
   async sendRequest(senderId: string, receiverName: string) {

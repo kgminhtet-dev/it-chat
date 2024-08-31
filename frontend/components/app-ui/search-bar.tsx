@@ -4,13 +4,13 @@ import SearchListItem from '@/components/app-ui/search-list-item';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/components/ui/use-toast';
-import alreadyChats, { searchChatByName, searchUsername } from '@/lib/actions/server-actions';
+import { searchChatByName, searchUsername } from '@/lib/actions/server-actions';
 import { IAccount } from '@/lib/types/IAccount';
-import { SearchIcon } from 'lucide-react';
 import { useState } from 'react';
 import useAppStore from '../hooks/use-app-store';
 import { IMember } from '@/lib/types/IMember';
 import { IChat } from '@/lib/types/IChat';
+import { SearchIcon } from 'lucide-react';
 
 export default function SearchBar(): JSX.Element {
   const { toast } = useToast();
@@ -34,32 +34,24 @@ export default function SearchBar(): JSX.Element {
           onChange={(e) => {
             setSearchTerm(e.target.value);
           }}
+          className={'pr-7'}
           onKeyDown={async (e) => {
             const search = searchTerm.trim();
             if (e.key === 'Enter' && search) {
+
               if (search[0] === '@') {
-                const chat = await alreadyChats(chats, search);
-                if (chat) {
-                  setSearchResults([
-                    {
-                      account: chat.contact,
-                      chat: chat,
-                    },
-                  ]);
-                  return;
-                }
                 const username = await searchUsername(search);
                 if (username.error) {
                   toast({
                     variant: 'destructive',
                     title: username.error,
                   });
-                  setSearchResults([]);
                   return;
                 }
                 if (username) setSearchResults([{ account: username }]);
                 return;
               }
+
               const foundChats = await searchChatByName(
                 chats,
                 search.toLowerCase(),
@@ -76,7 +68,7 @@ export default function SearchBar(): JSX.Element {
             setSearchResults([]);
           }}
         />
-        <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <SearchIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
       </div>
       {searchTerm.length > 0 && (
         <div className="m-1 z-50 absolute w-1/4 h-max top-11 rounded-md border bg-background shadow-sm">

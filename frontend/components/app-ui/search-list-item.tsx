@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Socket } from 'socket.io-client';
 import { IMember } from '@/lib/types/IMember';
 import { IChat } from '@/lib/types/IChat';
-import { getChat } from '@/lib/actions/server-actions';
+import alreadyChats, { getChat } from '@/lib/actions/server-actions';
 
 interface Props {
   chat?: IChat;
@@ -27,6 +27,7 @@ export default function SearchListItem({
                                        }: Props) {
   const { toast } = useToast();
   const router = useRouter();
+  const chats = useAppStore((state) => state.chats);
   const setCurrentChat = useAppStore((state) => state.setCurrentChat);
   const socket = useAppStore((state) => state.socket) as Socket;
   const setMessages = useAppStore((state) => state.setMessages);
@@ -34,21 +35,37 @@ export default function SearchListItem({
   return (
     <div
       onClick={async () => {
+
         if (foundUser.id === account.id)
           return toast({
             variant: 'default',
             title: 'You can\'t sent message to yourself.',
           });
+
         if (!chat) {
-          emitChatId(socket, {
-            senderId: account.id,
-            receiverId: foundUser.id,
-          });
+          const alreadyChat = await alreadyChats(chats, foundUser.username);
+
+          if (alreadyChat) {
+            const data = await getChat(account.id, alreadyChat.id);
+            if (data.error)
+              return toast({
+                variant: 'destructive',
+                title: data.error,
+              });
+            setCurrentChat(data.chat);
+            setMessages(data.messages);
+          } else {
+            emitChatId(socket, {
+              senderId: account.id,
+              receiverId: foundUser.id,
+            });
+          }
+
           clearSearchTerm('');
           router.push(`/${account.id}/chats`);
           return;
         }
-        clearSearchTerm('');
+
         const data = await getChat(account.id, chat.id);
         if (data.error)
           return toast({
@@ -57,6 +74,7 @@ export default function SearchListItem({
           });
         setCurrentChat(data.chat);
         setMessages(data.messages);
+        clearSearchTerm('');
         router.push(`/${account.id}/chats`);
       }}
       className="flex items-center rounded-md gap-4"

@@ -30,6 +30,7 @@ export class ChatService {
     return {
       id: chat.id,
       name: chat.name,
+      isActive: chat.isActive,
       members,
       contact,
       lastMessage: chat.lastMessage,
@@ -100,13 +101,26 @@ export class ChatService {
 
   async saveMessage(message: IMessage) {
     const chat = await this.chatRepoService.findById(message.chatId);
+    if (!chat.isActive)
+      return { error: 'Account is deactivated.', message: null };
+
     chat.lastMessage = message.content;
     chat.lastChatTime = message.createdAt;
     await this.chatRepoService.update(chat.id, {
       lastMessage: message.content,
       lastChatTime: message.createdAt,
     });
+
     const savedMessage = await this.messageRepoService.save(chat, message);
-    return this.transformMessage(savedMessage);
+    return { error: null, message: this.transformMessage(savedMessage) };
+  }
+
+  async updateIsActive(accountId: string, isActive: boolean) {
+    const chatIds = await this.getChatIdListOf(accountId);
+    const updatedResult = await this.chatRepoService.updateIsActive(
+      chatIds,
+      isActive,
+    );
+    return updatedResult.affected > 0;
   }
 }
