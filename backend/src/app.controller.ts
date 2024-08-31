@@ -71,7 +71,6 @@ export class AppController {
     @Query('include') include: string,
     @Query('action') action: string,
   ) {
-    console.log('action is ', action);
     const accountId = request.payload.sub;
     if (include && include === 'chats')
       return this.userService.getAccountIncludedChats(accountId);
