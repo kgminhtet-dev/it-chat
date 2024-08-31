@@ -37,7 +37,6 @@ export class ChatRepoService {
   }
 
   async create(id: string, members: string[], name = '') {
-    members = members.map((member) => member.slice(1));
     const accounts = await this.accountRepoService.findAll(members);
     const newChat = this.chatRepository.create({
       id,

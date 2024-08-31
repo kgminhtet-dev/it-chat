@@ -32,7 +32,6 @@ export default function SignUpForm() {
   const { toast } = useToast();
   const router = useRouter();
   const setAccount = useAppStore((state) => state.setAccount);
-  const setChats = useAppStore((state) => state.setChats);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,7 +58,6 @@ export default function SignUpForm() {
         title: data.error,
       });
     setAccount(data.account);
-    setChats(data.chats);
     router.push(`/${data.account.id}`);
   };
 

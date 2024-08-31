@@ -24,7 +24,6 @@ export default function FetchChat({ accountId, chatId }: Props): JSX.Element {
             variant: "destructive",
             title: data.error,
           });
-
         setChat(data.chat);
         setMessage(data.messages);
       })

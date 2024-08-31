@@ -1,10 +1,10 @@
-import { IAccount } from '@/lib/types/IAccount';
+import { IMember } from '@/lib/types/IMember';
 
 export interface IChat {
   id: string;
   name?: string;
-  contact: IAccount;
-  participants: IAccount[];
+  contact: IMember;
+  participants: IMember[];
   lastMessage: string;
   lastChatTime: Date;
 }

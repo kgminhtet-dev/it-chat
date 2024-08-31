@@ -1,34 +1,41 @@
-"use client";
+'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMessages } from "@/lib/actions/server-actions";
-import { IAccount } from "@/lib/types/IAccount";
-import { IChat } from "@/lib/types/IChat";
-import { cn, formatDateToTimeString, shortName } from "@/lib/utils";
-import Link from "next/link";
-import useAppStore from "../hooks/use-app-store";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getChat } from '@/lib/actions/server-actions';
+import { useToast } from '@/components/ui/use-toast';
+import { cn, formatDateToTimeString, shortName } from '@/lib/utils';
+import { IAccount } from '@/lib/types/IAccount';
+import { IChat } from '@/lib/types/IChat';
+import Link from 'next/link';
+import useAppStore from '../hooks/use-app-store';
 
 interface Props {
   chat: IChat;
 }
 
 export default function ChatListItem({ chat }: Props) {
+  const { toast } = useToast();
   const account = useAppStore((state) => state.account) as IAccount;
   const currentChat = useAppStore((state) => state.currentChat) as IChat;
-  const setMessages = useAppStore((state) => state.setMessages);
   const setCurrentChat = useAppStore((state) => state.setCurrentChat);
+  const setMessages = useAppStore((state) => state.setMessages);
 
   return (
     <Link
-      href={`/${account.id}/chats/${chat.id}`}
+      href={`/${account.id}/chats`}
       onClick={async () => {
-        setCurrentChat(chat);
-        const messages = await getMessages(account.id, chat.id);
-        setMessages(messages);
+        const data = await getChat(account.id, chat.id);
+        if (data.error)
+          return toast({
+            variant: 'destructive',
+            title: data.error,
+          });
+        setCurrentChat(data.chat);
+        setMessages(data.messages);
       }}
       className={cn(
-        "flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors",
-        currentChat?.id === chat.id && " bg-blue-100",
+        'flex h-14 items-center gap-4 p-2 rounded-xl hover:bg-muted transition-colors',
+        currentChat?.id === chat.id && ' bg-blue-100',
       )}
     >
       <Avatar className="h-10 w-10 text-blue-500">
