@@ -1,15 +1,22 @@
 'use client';
 
 import ConversationBar from '@/components/app-ui/conversation-bar';
-import useAppStore from '@/components/hooks/use-app-store';
 import MessageInput from '@/components/app-ui/message-input';
 import MessageList from '@/components/app-ui/message-list';
+import { useRouter } from 'next/navigation';
+import useAppStore from '@/components/hooks/use-app-store';
+import { IAccount } from '@/lib/types/IAccount';
 
 export default function ConversationPage() {
+  const router = useRouter();
+  const account = useAppStore((state) => state.account) as IAccount;
   const currentChat = useAppStore((state) => state.currentChat);
   const messages = useAppStore((state) => state.messages);
-  if (!currentChat) return null;
-  if (!messages) return null;
+
+  if (!currentChat || !messages) {
+    router.push(`/${account?.id}`);
+    return null;
+  }
 
   return (
     <div className="h-full grid grid-flow-row grid-rows-12 col-span-1 overflow-auto">
