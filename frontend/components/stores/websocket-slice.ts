@@ -7,19 +7,15 @@ import { IMessage } from '@/lib/types/IMessage';
 import { IChat } from '@/lib/types/IChat';
 import { AccountSlice } from '@/components/stores/account-slice';
 import { IAccount } from '@/lib/types/IAccount';
+import { IMember } from '@/lib/types/IMember';
 
 export interface WebSocketSlice {
   socket: Socket | null;
   setSocket: (socket: Socket | null) => void;
   handleMessageEvent: (message: IMessage) => void;
-  handleNewChatEvent: ({
-                         message,
-                         chat,
-                       }: {
-    message: IMessage;
-    chat: IChat;
-  }) => void;
   handleChatIdEvent: (chat: IChat) => void;
+  handleNewChatEvent: ({ message, chat }: any) => void;
+  handleDisappearMessage: ({ chatId, messageId }: any) => void;
 }
 
 const createWebSocketSlice: StateCreator<
@@ -38,6 +34,7 @@ const createWebSocketSlice: StateCreator<
       get().handleChatIdEvent(chat);
     });
     socket?.on('new chat', (payload) => get().handleNewChatEvent(payload));
+    socket?.on('disappear message', (payload) => get().handleDisappearMessage(payload));
 
     return set({ socket });
   },
@@ -66,8 +63,8 @@ const createWebSocketSlice: StateCreator<
 
   handleNewChatEvent: ({ message, chat }) => {
     const account = get().account as IAccount;
-    chat.contact = chat.participants.filter((participant) => participant.id !== account.id)[0];
-    console.log('chat ', chat, 'current chat ', get().currentChat);
+    chat.contact = chat.participants.filter((participant: IMember) => participant.id !== account.id)[0];
+
     if (chat.id === get().currentChat?.id) {
       get().addMessage(message);
       get().setChats(get().chats.map((c) => {
@@ -77,6 +74,11 @@ const createWebSocketSlice: StateCreator<
     } else {
       get().addChat(chat);
     }
+  },
+
+  handleDisappearMessage: async ({ chats, messages }) => {
+    get().setMessages(messages);
+    get().setChats(chats);
   },
 });
 

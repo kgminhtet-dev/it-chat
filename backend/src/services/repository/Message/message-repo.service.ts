@@ -51,7 +51,10 @@ export class MessageRepoService {
     });
   }
 
-  findByChatId(chatId: string) {
+  findByChatId(
+    chatId: string,
+    { order, take }: { order: 'ASC' | 'DESC' | 'asc' | 'desc'; take?: number },
+  ) {
     return this.messageRepository.find({
       where: {
         chat: {
@@ -62,12 +65,16 @@ export class MessageRepoService {
         sender: true,
       },
       order: {
-        createdAt: 'ASC',
+        createdAt: order,
       },
     });
   }
 
   update(id: string, message: unknown) {
     return this.messageRepository.update(id, message);
+  }
+
+  delete(id: string) {
+    return this.messageRepository.delete(id);
   }
 }

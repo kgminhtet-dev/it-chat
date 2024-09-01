@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
@@ -12,6 +13,7 @@ import { MessageEventDto } from './dto/message-event.dto';
 import { NewChatEventDto } from './dto/new-chat-event.dto';
 import { AuthWsGuard } from './services/auth/auth-ws.guard';
 import { ChatService } from './services/chat/chat.service';
+import { convertTimeToMilliseconds } from './services/common/common-sevice';
 
 @WebSocketGateway({
   cors: {
@@ -117,14 +119,31 @@ export class AppWsGateway {
   @SubscribeMessage('message')
   async handleMessage(
     @MessageBody()
-    { sender, chatId, content }: MessageEventDto,
+    { chatId, content, life }: MessageEventDto,
+    @ConnectedSocket() client: Socket,
   ) {
+    const sender = client.data.accountId;
     const message = this.chatService.createMessage(sender, chatId, content);
     const { error } = await this.chatService.saveMessage(message);
     if (error) {
       this.server.to(chatId).emit('error', { message: error });
     } else {
       this.server.to(chatId).emit('message', message);
+    }
+
+    if (life.hour || life.minute || life.second) {
+      setTimeout(async () => {
+        const ok = await this.chatService.deleteMessage(chatId, message.id);
+        if (ok) {
+          const chats = await this.chatService.getChatsOf(sender);
+          this.server
+            .to(chatId)
+            .emit('disappear message', { chats, messages: ok });
+        } else
+          this.server
+            .to(chatId)
+            .emit('error', { message: 'Internal Server Error' });
+      }, convertTimeToMilliseconds(life));
     }
   }
 }

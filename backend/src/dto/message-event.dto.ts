@@ -1,5 +1,7 @@
+import { ITime } from '../types/time';
+
 export interface MessageEventDto {
   content: string;
-  sender: string;
   chatId: string;
+  life: ITime;
 }

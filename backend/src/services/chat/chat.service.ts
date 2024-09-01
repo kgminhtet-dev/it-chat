@@ -88,7 +88,9 @@ export class ChatService {
   }
 
   async getMessagesOf(chatId: string) {
-    const messages = await this.messageRepoService.findByChatId(chatId);
+    const messages = await this.messageRepoService.findByChatId(chatId, {
+      order: 'ASC',
+    });
     return messages.map((message) => this.transformMessage(message));
   }
 
@@ -124,5 +126,23 @@ export class ChatService {
       isActive,
     );
     return updatedResult.affected > 0;
+  }
+
+  async deleteMessage(chatId: string, messageId: string) {
+    const deletedMessage = await this.messageRepoService.delete(messageId);
+    if (deletedMessage.affected === 0) return false;
+
+    const messages = await this.messageRepoService.findByChatId(chatId, {
+      order: 'asc',
+    });
+    const latestMessage = messages[messages.length - 1];
+    const updatedChat = await this.chatRepoService.update(chatId, {
+      lastMessage: latestMessage.content,
+      lastChatTime: latestMessage.createdAt,
+    });
+
+    if (updatedChat.affected === 0) return false;
+
+    return messages.map((message) => this.transformMessage(message));
   }
 }
