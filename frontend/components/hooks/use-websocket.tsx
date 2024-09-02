@@ -9,7 +9,7 @@ export default function useWebSocket(token: string) {
   const { toast } = useToast();
   const setSocket = useAppStore((state) => state.setSocket);
   const [isConnected, setIsConnected] = useState(false);
-  const url = `ws://localhost:8080`;
+  const url = `ws://it-chat.onrender.com`;
 
   useEffect(() => {
     const socket = io(url, {
