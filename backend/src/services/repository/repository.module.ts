@@ -29,7 +29,7 @@ import { FriendRequestRepoService } from './FriendRequest/friendRequest-repo.ser
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DATABASE'),
         entities: [Account, FriendRequest, Chat, Message, Notification],
-        synchronize: process.env.NODE_ENV === 'development',
+        synchronize: true,
         ssl:
           process.env.NODE_ENV === 'production'
             ? { rejectUnauthorized: false }
