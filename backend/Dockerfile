@@ -1,10 +1,5 @@
-FROM ubuntu:latest
-LABEL authors="kaung min htet"
-
-ENTRYPOINT ["top", "-b"]
-
 # Use the official Node.js image as a base image
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -21,8 +16,8 @@ COPY . .
 # Build the NestJS application
 RUN npm run build
 
-# Expose the port the app runs on
+# Expose the port that the NestJS app will run on
 EXPOSE 3000
 
-# Define the command to run the application
-CMD ["bun", "run", "start:prod"]
+# Start the NestJS application in production mode
+CMD ["npm", "run", "start:prod"]
