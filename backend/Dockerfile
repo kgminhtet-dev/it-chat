@@ -13,16 +13,16 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN bun install
 
 # Copy the rest of the application code to the working directory
 COPY . .
 
 # Build the NestJS application
-RUN npm run build
+RUN bun run build
 
 # Expose the port the app runs on
 EXPOSE 3000
 
 # Define the command to run the application
-CMD ["npm", "run", "start:prod"]
+CMD ["bun", "run", "start:prod"]
