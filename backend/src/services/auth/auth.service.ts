@@ -30,6 +30,7 @@ export class AuthService {
     isExistAccount = await this.accountRepoService.findByUsername(
       signupDto.username,
     );
+
     if (isExistAccount) {
       throw new BadRequestException(
         `Username ${signupDto.username} already exist`,
