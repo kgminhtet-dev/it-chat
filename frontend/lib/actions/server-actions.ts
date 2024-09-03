@@ -35,7 +35,7 @@ export async function signin(formdata: any) {
     }
     return { error: response_data.message };
   } catch (error) {
-    redirect(`/error`);
+    return { error: 'Internal server error' };
   }
 }
 

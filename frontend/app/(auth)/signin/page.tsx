@@ -3,14 +3,15 @@ import Link from 'next/link';
 
 export default function SigninPage() {
   return (
-    <main className="flex h-screen items-center justify-center bg-muted">
+    <main className="flex h-screen items-center justify-center">
       <div
-        className={'flex flex-col justify-between gap-1 border w-1/3 p-3 pr-7 pl-7 shadow rounded-md'}>
+        className={'flex flex-col justify-between gap-1 border border-gray-200 w-1/3 p-3 pr-7 pl-7 shadow' +
+          ' rounded-md'}>
         <div className={'flex flex-col gap-7'}>
           <p className={'text-3xl text-center font-bold'}>Sign In</p>
           <SignInForm />
         </div>
-        <div className="text-sm text-muted-foreground">
+        <div className="mt-5 text-sm text-muted-foreground">
           Don&apos;t have an account?{' '}
           <Link
             href="/signup"

@@ -72,7 +72,7 @@ export class AppWsGateway {
     const accounts = await this.chatService.getMembers([senderId, receiverId]);
     const senderConn = this.connList.get(senderId);
     if (!senderConn) {
-      this.server.emit('error', { message: 'Invalid socket.' });
+      this.server.emit('error', { message: 'Invalid socket' });
       return;
     }
     senderConn.join(chatId);

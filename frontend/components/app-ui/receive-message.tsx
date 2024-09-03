@@ -21,7 +21,7 @@ export default function ReceiveMessage({ sender, message }: Props) {
           {message.content}
           <div className="w-14" />
         </div>
-        <div className="absolute right-2 bottom-1 text-xs text-muted-foreground">
+        <div className="absolute right-3 bottom-1 text-xs text-muted-foreground">
           {formatDateToTimeString(new Date(message.createdAt))}
         </div>
       </div>

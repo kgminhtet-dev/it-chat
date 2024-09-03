@@ -12,7 +12,10 @@ export default function FetchToken() {
 
   useEffect(() => {
     getCookie('access_token')
-      .then((token) => setToken(token?.value))
+      .then((token) => {
+        if (token) setToken(token.value);
+        else router.push('/signin');
+      })
       .catch((error) => router.push('/signin'));
   }, [router, setToken]);
 

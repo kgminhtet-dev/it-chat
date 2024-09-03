@@ -19,7 +19,7 @@ export default function SendFriendRequest({ accountId, friendRequest }: Props): 
 
   return (
     <div
-      className={'flex bg-gray-200 rounded-md justify-between items-center p-2'}
+      className={'flex border rounded-2xl justify-between items-center p-2 hover:border-blue-500'}
     >
       <div className={'flex gap-2 justify-start items-center'}>
         <Avatar className="h-10 w-10 text-blue-500">

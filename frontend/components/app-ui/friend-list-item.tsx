@@ -13,7 +13,7 @@ export default function FriendListItem({ accountId, friend }: Props) {
     <Link
       href={`/${accountId}/friends/${friend.id}`}
       className={
-        'flex justify-between border items-center rounded-md bg-white p-2 cursor-pointer hover:border-blue-500'
+        'flex justify-between border items-center rounded-2xl bg-white p-2 cursor-pointer hover:border-blue-500'
       }
     >
       <div className={'flex gap-2 justify-start items-center'}>

@@ -26,24 +26,26 @@ export default function MessageList() {
   }, [messages, entry, inView]);
 
   return (
-    <ScrollArea className={'h-full p-2'}>
-      {messages.length > 0 &&
-        messages.map((message, index) =>
-          message.sender === account.id ? (
-            <SentMessage
-              key={message.id + index}
-              sender={account}
-              message={message}
-            />
-          ) : (
-            <ReceiveMessage
-              key={message.id + index}
-              sender={chat.contact}
-              message={message}
-            />
-          ),
-        )}
-      <div ref={scrollRef} />
+    <ScrollArea className={'h-full p-1 pr-2'}>
+      <div className={'h-screen flex flex-col justify-end'}>
+        {messages.length > 0 &&
+          messages.map((message, index) =>
+            message.sender === account.id ? (
+              <SentMessage
+                key={message.id + index}
+                sender={account}
+                message={message}
+              />
+            ) : (
+              <ReceiveMessage
+                key={message.id + index}
+                sender={chat.contact}
+                message={message}
+              />
+            ),
+          )}
+        <div ref={scrollRef} />
+      </div>
     </ScrollArea>
   );
 }

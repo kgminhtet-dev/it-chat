@@ -16,7 +16,7 @@ import { signout } from '@/lib/actions/server-actions';
 import useAppStore from '@/components/hooks/use-app-store';
 
 export default function SignoutButton() {
-  const setAccount = useAppStore((state) => state.setAccount);
+  const setToken = useAppStore((state) => state.setToken);
   const setChats = useAppStore((state) => state.setChats);
   const setMessages = useAppStore((state) => state.setMessages);
 
@@ -42,9 +42,9 @@ export default function SignoutButton() {
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90"
             onClick={async () => {
-              setAccount(undefined);
-              setMessages([]);
               setChats([]);
+              setMessages([]);
+              setToken('');
               await signout();
             }}
           >

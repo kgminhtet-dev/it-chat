@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import useAppStore from './use-app-store';
 import { useToast } from '@/components/ui/use-toast';
+import { onRefresh } from 'next/dist/client/components/react-dev-overlay/pages/client';
 
 export default function useWebSocket(token: string) {
   const { toast } = useToast();
@@ -20,20 +21,20 @@ export default function useWebSocket(token: string) {
 
     socket.on('connect', () => {
       setIsConnected(true);
-      console.info('[Connected]');
     });
 
     socket.on('disconnect', () => {
       setIsConnected(false);
-      console.info('[Disconnected]');
     });
 
     socket.on('error', (error) => {
-      console.error('Socket.io error:', error);
-      toast({
-        variant: 'destructive',
-        title: error.message,
-      });
+      if (error.message === 'Invalid socket') {
+        onRefresh();
+      } else
+        toast({
+          variant: 'destructive',
+          title: error.message,
+        });
     });
 
     setSocket(socket);
@@ -43,7 +44,7 @@ export default function useWebSocket(token: string) {
       setSocket(null);
       socket.disconnect();
     };
-  }, [token, url, setSocket]);
+  }, [token, url, setSocket, toast]);
 
   return { isConnected };
 }
