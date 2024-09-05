@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -7,12 +13,17 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  @Length(5, 64)
+  @Length(4, 64)
   fullname: string;
 
   @IsOptional()
   @IsString()
-  @Length(5, 20)
+  @Matches(/^@/, {
+    message: 'Username must start with "@"',
+  })
+  @Length(5, 20, {
+    message: 'Username must be at least 4 characters long',
+  })
   username: string;
 
   @IsOptional()

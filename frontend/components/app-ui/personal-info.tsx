@@ -57,7 +57,6 @@ export default function PersonalInto({ type, account, fn }: PersonalInfo) {
             <Button
               onClick={async () => {
                 const newInfo = userInfo.trim();
-                console.log('changed ', newInfo);
                 if (type === 'fullname' && account.fullname === newInfo) {
                   toast({
                     variant: 'destructive',

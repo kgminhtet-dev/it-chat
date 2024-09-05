@@ -29,8 +29,16 @@ export async function signin(formdata: any) {
     });
     const response_data = await response.json();
     if (response.status === StatusCodes.OK) {
-      cookies().set('access_token', response_data.access_token);
-      cookies().set('account_id', response_data.account.id);
+      cookies().set('access_token', response_data.access_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+      cookies().set('account_id', response_data.account.id, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
       return response_data;
     }
     return { error: response_data.message };
@@ -49,8 +57,16 @@ export async function signup(formdata: any) {
     });
     const response_data = await response.json();
     if (response.status === StatusCodes.CREATED) {
-      cookies().set('access_token', response_data.access_token);
-      cookies().set('account_id', response_data.account.id);
+      cookies().set('access_token', response_data.access_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
+      cookies().set('account_id', response_data.account.id, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+      });
       return response_data;
     }
     return { error: response_data.message };
