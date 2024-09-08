@@ -27,7 +27,7 @@ export default function MessageList() {
 
   return (
     <ScrollArea className={'h-full p-1 pr-2'}>
-      <div className={'h-screen flex flex-col justify-end'}>
+      <div className={'flex flex-col justify-end'}>
         {messages.length > 0 &&
           messages.map((message, index) =>
             message.sender === account.id ? (

@@ -51,7 +51,7 @@ export class AppController {
   }
 
   @UseGuards(AuthGuard)
-  @Get()
+  @Get('auth/signout')
   async signout() {
     return this.authService.signout();
   }
