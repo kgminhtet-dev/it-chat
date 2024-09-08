@@ -8,6 +8,7 @@ import { IChat } from '@/lib/types/IChat';
 import { AccountSlice } from '@/components/stores/account-slice';
 import { IAccount } from '@/lib/types/IAccount';
 import { IMember } from '@/lib/types/IMember';
+import { getAccount } from '@/lib/actions/server-actions';
 
 export interface WebSocketSlice {
   socket: Socket | null;
@@ -76,7 +77,9 @@ const createWebSocketSlice: StateCreator<
     }
   },
 
-  handleDisappearMessage: async ({ chats, messages }) => {
+  handleDisappearMessage: async ({ messages }) => {
+    const account = get().account as IAccount;
+    const { chats } = await getAccount(account.id);
     get().setMessages(messages);
     get().setChats(chats);
   },

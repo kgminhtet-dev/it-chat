@@ -135,10 +135,7 @@ export class AppWsGateway {
       setTimeout(async () => {
         const ok = await this.chatService.deleteMessage(chatId, message.id);
         if (ok) {
-          const chats = await this.chatService.getChatsOf(sender);
-          this.server
-            .to(chatId)
-            .emit('disappear message', { chats, messages: ok });
+          this.server.to(chatId).emit('disappear message', { messages: ok });
         } else
           this.server
             .to(chatId)
