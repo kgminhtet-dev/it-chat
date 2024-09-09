@@ -33,11 +33,13 @@ export async function signin(formdata: any) {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
+        maxAge: 60 * 60 * 24,
       });
       cookies().set('account_id', response_data.account.id, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
+        maxAge: 60 * 60 * 24,
       });
       return response_data;
     }
@@ -61,11 +63,13 @@ export async function signup(formdata: any) {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
+        maxAge: 60 * 60 * 24,
       });
       cookies().set('account_id', response_data.account.id, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
+        maxAge: 60 * 60 * 24,
       });
       return response_data;
     }
