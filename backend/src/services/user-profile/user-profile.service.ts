@@ -296,7 +296,15 @@ export class UserProfileService {
       throw new BadRequestException("Can't add yourself.");
 
     const receiver = await this.accountRepoService.findByUsername(receiverName);
-    if (!receiver) throw new NotFoundException('Username not found.');
+    if (!receiver)
+      throw new NotFoundException(`User with ${receiverName} not found.`);
+
+    const pendings = await this.getFriendRequestPendings(sender.id);
+    const isAlreadyPending = pendings.find(
+      (pending) => pending.receiver.username === receiverName,
+    );
+    if (isAlreadyPending)
+      throw new BadRequestException(`You've already sent friend-request`);
 
     const isFriend = sender.friends.find(
       (friend) => friend.username === receiverName,
