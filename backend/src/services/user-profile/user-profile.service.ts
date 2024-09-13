@@ -8,11 +8,11 @@ import {
 import * as bcrypt from 'bcrypt';
 import { IAccount } from '../../types/account';
 import { IChat } from '../../types/chat';
+import { ChatService } from '../chat/chat.service';
 import { AccountRepoService } from '../repository/Account/account-repo.service';
 import { IChangePassword } from '../repository/Account/dto/change-password';
 import { FriendRequestRepoService } from '../repository/FriendRequest/friendRequest-repo.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class UserProfileService {
@@ -323,13 +323,25 @@ export class UserProfileService {
   }
 
   async cancelRequest(friendRequestId: string) {
-    return this.friendRequestRepoService.remove(friendRequestId);
+    try {
+      const DeleteResult =
+        await this.friendRequestRepoService.remove(friendRequestId);
+      if (DeleteResult.affected === 1)
+        return { message: 'Canceled friend request.' };
+      return { message: 'Invalid friend request.' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Internal Server Error');
+    }
   }
 
   async rejectRequest(friendRequestId: string) {
     try {
-      await this.friendRequestRepoService.remove(friendRequestId);
-      return { message: 'Rejected friend request.' };
+      const DeleteResult =
+        await this.friendRequestRepoService.remove(friendRequestId);
+      if (DeleteResult.affected === 1)
+        return { message: 'Rejected friend request.' };
+      return { message: 'Invalid friend request.' };
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Internal Server Error');

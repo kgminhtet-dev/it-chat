@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -24,7 +24,7 @@ export class AuthService {
       signupDto.email,
     );
     if (isExistAccount) {
-      throw new BadRequestException(`Email ${signupDto.email} already exist`);
+      throw new ConflictException(`Email ${signupDto.email} already exist`);
     }
 
     isExistAccount = await this.accountRepoService.findByUsername(
@@ -32,7 +32,7 @@ export class AuthService {
     );
 
     if (isExistAccount) {
-      throw new BadRequestException(
+      throw new ConflictException(
         `Username ${signupDto.username} already exist`,
       );
     }
